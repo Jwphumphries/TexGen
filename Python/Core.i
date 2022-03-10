@@ -124,6 +124,7 @@ namespace std
 %include "../Core/SlaveNode.h"
 %include "../Core/TexGen.h"
 %include "../Core/Yarn.h"
+%include "../Core/DualYarn.h"
 %warnfilter(401);
 %include "../Core/Misc.h"
 %warnfilter(+401);

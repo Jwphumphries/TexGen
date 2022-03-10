@@ -38,6 +38,7 @@ using namespace TexGen;
 %import "../Core/PropertiesTextile.h"
 %import "../Core/PropertiesYarn.h"
 %import "../Core/Yarn.h"
+%import "../Core/DualYarn.h"
 %import "../Core/Textile.h"
 %import "../Core/Domain.h"
 %import "../Core/mymath.h"

@@ -37,11 +37,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Domain.h"
 #include "PropertiesYarn.h"
 
+
 namespace TexGen
 {
 	class CDomain;
 	class CTextile;
-
+	class CDualYarn; // added this here
+	
 	using namespace std;
 
 	/// Represents a yarn consisting of master nodes, section and interpolation function
@@ -146,7 +148,7 @@ namespace TexGen
 		void SetEquiSpacedSectionMesh(bool bEquiSpacedSectionMesh);
 
 		/// Assign a section to the yarn
-		void AssignSection(const CYarnSection &YarnSection);
+		virtual void AssignSection(const CYarnSection &YarnSection);
 
 		/// Rotate the Yarn by given quaternion
 		void Rotate(WXYZ Rotation, XYZ Origin = XYZ(0,0,0));
@@ -456,6 +458,10 @@ namespace TexGen
 
 		//int GetMeshPoint( const XY &Point, int& Index );
 
+		/// Pointer to DualYarn
+		
+		CDualYarn* GetDualYarn();
+		
 	protected:
 		/// Create slave nodes and apply yarn section to them
 		/**

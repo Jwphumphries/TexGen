@@ -183,6 +183,7 @@ void CYarn::AssignDefaults()
 	AssignFibreDistribution(CFibreDistributionConst());
 	AssignSection(CYarnSectionConstant(CSectionEllipse(1, 1)));
 	SetResolution(20, 40);  // Changed default numSectionPoints from 20 8-4-13
+	
 }
 
 void CYarn::SetNodes(const vector<CNode> &Nodes)
@@ -2052,6 +2053,13 @@ bool CYarn::ConvertToInterpNodes()
 }
 
 
+///Dual yarn added functions
 
+// DuaL Yarn pointer function
+
+CDualYarn* CYarn::GetDualYarn()
+{
+	return dynamic_cast<CDualYarn*>(this);
+}
 
 

@@ -1280,7 +1280,7 @@ void CModeller::CreateYarn()
 			EndZ.ToDouble(&End.z);
 			NumNodes.ToLong(&iNumNodes);
 			stringstream StringStream;
-			StringStream << "yarn = CYarn()" << endl;
+			StringStream << "yarn = CYar()" << endl;
 			StringStream << "yarn.AddNode(CNode(XYZ(" << Origin << ")))" << endl;
 			for (i=1; i<iNumNodes-1; ++i)
 			{
