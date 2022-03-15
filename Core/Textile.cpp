@@ -147,6 +147,39 @@ int CTextile::AddYarn(const CYarn &Yarn) const
 	return m_Yarns.size()-1;
 }
 
+int CTextile::AddDualYarn(const CDualYarn &Yarn)
+{
+	// This call may result in the CYarn copy constructor being invoked
+	// This is not effecient but more importantly all the parent pointers
+	// are reset to NULL
+	//AddYarn(Yarn);
+	m_DualYarns.push_back(Yarn);
+	// Make sure the parent pointers are reset correctly
+	vector<CDualYarn>::iterator itYarn;
+	for (itYarn = m_DualYarns.begin(); itYarn != m_DualYarns.end(); ++itYarn)
+	{
+		itYarn->SetParent(this);
+	}
+	return m_DualYarns.size() - 1;
+}
+
+
+int CTextile::AddDualYarn(const CDualYarn &Yarn) const
+{
+	// This call may result in the CYarn copy constructor being invoked
+	// This is not effecient but more importantly all the parent pointers
+	// are reset to NULL
+	//AddYarn(Yarn);
+	m_DualYarns.push_back(Yarn);
+	// Make sure the parent pointers are reset correctly
+	vector<CDualYarn>::iterator itYarn;
+	for (itYarn = m_DualYarns.begin(); itYarn != m_DualYarns.end(); ++itYarn)
+	{
+		itYarn->SetParent(this);
+	}
+	return m_DualYarns.size() - 1;
+}
+
 bool CTextile::DeleteYarn(int iIndex)
 {
 	if (iIndex < 0 || iIndex >= (int)m_Yarns.size())
@@ -663,6 +696,40 @@ const CYarn *CTextile::GetYarn(int iIndex) const
 		return NULL;
 	}
 	return &m_Yarns[iIndex];
+}
+// added by joe
+vector<CDualYarn> &CTextile::GetDualYarns()
+{
+	BuildTextileIfNeeded();
+	return m_DualYarns;
+}
+// added by joe
+const vector<CDualYarn> &CTextile::GetDualYarns() const
+{
+	BuildTextileIfNeeded();
+	return m_DualYarns;
+}
+// added by joe
+CDualYarn *CTextile::GetDualYarn(int iIndex)
+{
+	BuildTextileIfNeeded();
+	if (iIndex < 0 || iIndex >= (int)m_DualYarns.size())
+	{
+		TGERROR("Unable to get yarn, invalid index: " << iIndex);
+		return NULL;
+	}
+	return &m_DualYarns[iIndex];
+}
+// added by joe
+const CDualYarn *CTextile::GetDualYarn(int iIndex) const
+{
+	BuildTextileIfNeeded();
+	if (iIndex < 0 || iIndex >= (int)m_DualYarns.size())
+	{
+		TGERROR("Unable to get yarn, invalid index: " << iIndex);
+		return NULL;
+	}
+	return &m_DualYarns[iIndex];
 }
 
 int CTextile::GetNumYarns() const

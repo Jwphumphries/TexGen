@@ -1,6 +1,8 @@
 
 #pragma once
 #include "Yarn.h"
+#include "YarnSection.h"
+#include "Mesh.h"
 
 namespace TexGen
 {
@@ -13,9 +15,17 @@ namespace TexGen
 		//CDualYarn(TiXmlElement &Element);
 		~CDualYarn(void);
 
-		void AssignSection();
+		//string GetYarnType() const { return "DualYarn"; }
 
-		
+
+		void AssignSection(const CYarnSection &YarnSection);
+		void AssignDefaults();
+
+		CObjectContainer<CYarnSection> m_pYarnSectionOuter;
+
+		bool BuildSections() const;
+
+	
 
 	};
 

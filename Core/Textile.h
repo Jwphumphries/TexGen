@@ -58,6 +58,7 @@ namespace TexGen
 
 		/// Add a Yarn to the textile
 		int AddYarn(const CYarn &Yarn);
+		int AddDualYarn(const CDualYarn &Yarn); // added by joe
 
 		/// Delete an Yarn from the textile
 		/**
@@ -285,6 +286,11 @@ namespace TexGen
 		CYarn *GetYarn(int iIndex);
 		const vector<CYarn> &GetYarns() const;
 		vector<CYarn> &GetYarns();
+		// added by joe
+		const CDualYarn *GetDualYarn(int iIndex) const;
+		CDualYarn *GetDualYarn(int iIndex);
+		const vector<CDualYarn> &GetDualYarns() const;
+		vector<CDualYarn> &GetDualYarns();
 		const CDomain* GetDomain() const {return m_pDomain;}
 		CDomain* GetDomain() {return m_pDomain;}
 
@@ -312,6 +318,7 @@ namespace TexGen
 		void CleanUp();
 
 		int AddYarn(const CYarn &Yarn) const;
+		int AddDualYarn(const CDualYarn &Yarn) const; // added by joe
 
 		/// Vector of yarns contained within this cell
 		/**
@@ -322,6 +329,7 @@ namespace TexGen
 		this variable is declared as mutable.
 		*/
 		mutable vector<CYarn> m_Yarns;
+		mutable vector<CDualYarn> m_DualYarns; // added by joe
 
 		/// Variable which keeps track of wether the textile needs building or not
 		/**

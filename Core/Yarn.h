@@ -148,7 +148,7 @@ namespace TexGen
 		void SetEquiSpacedSectionMesh(bool bEquiSpacedSectionMesh);
 
 		/// Assign a section to the yarn
-		virtual void AssignSection(const CYarnSection &YarnSection);
+		virtual void AssignSection(const CYarnSection &YarnSection); // added virtual by joe
 
 		/// Rotate the Yarn by given quaternion
 		void Rotate(WXYZ Rotation, XYZ Origin = XYZ(0,0,0));
@@ -173,7 +173,7 @@ namespace TexGen
 		\param Mesh Mesh to add elements to
 		\param bAddEndCaps If true then the ends of the yarns will be closed with triangles
 		*/
-		bool AddSurfaceToMesh(CMesh &Mesh, bool bAddEndCaps = true) const;
+		virtual bool AddSurfaceToMesh(CMesh &Mesh, bool bAddEndCaps = true) const;
 
 		/// Create surface mesh for this yarn and add it to the surface mesh object
 		/**
@@ -460,7 +460,9 @@ namespace TexGen
 
 		/// Pointer to DualYarn
 		
-		CDualYarn* GetDualYarn();
+		CDualYarn* GetDualYarn(); // added by joe
+		string YarnType = "SingleYarn"; // added by joe
+		virtual string GetYarnType() const { return "SingleYarn"; } 
 		
 	protected:
 		/// Create slave nodes and apply yarn section to them
@@ -485,7 +487,7 @@ namespace TexGen
 		bool BuildYarnIfNeeded(int iBuildType) const;
 
 		bool BuildSlaveNodes() const;
-		bool BuildSections() const;
+		virtual bool BuildSections() const; // made virtual by joe
 		bool BuildSectionMeshes() const;
 
 		/// Add end caps to the mesh

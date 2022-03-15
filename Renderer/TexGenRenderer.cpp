@@ -518,13 +518,31 @@ void CTexGenRenderer::RenderTextile(CTextile &Textile, double dOpacity)
 		pDomain = Textile.GetDomain();
 
 	vector<CYarn>::iterator itYarn;
-
+	vector<CDualYarn>::iterator itDualYarn; // added by joe
+	//vector<CYarn> Yarn;
+	bool dualyarn = true;
 	int i;
+	int j = 0;
 	vtkProp* pProp;
 	BeginBatch();
 	for (itYarn = Textile.GetYarns().begin(), i=0; itYarn != Textile.GetYarns().end(); ++itYarn, ++i)
 	{
+		//added by joe
+		//CYarn Yarn = *itYarn;
 		pProp = RenderYarn(*itYarn, pDomain, GetIndexedColor(i), dOpacity);
+		/*
+		if (itYarn[i].YarnType=="DualYarn")
+		{
+			
+			pProp = RenderDualYarn(*Textile.GetDualYarn(j), pDomain, GetIndexedColor(i), dOpacity);
+			j++;
+
+		}
+		else
+		{
+			pProp = RenderYarn(*itYarn, pDomain, GetIndexedColor(i), dOpacity);
+		}
+		*/
 		if (pProp)
 		{
 			PROP_YARN_INFO Info;
@@ -533,6 +551,22 @@ void CTexGenRenderer::RenderTextile(CTextile &Textile, double dOpacity)
 			m_YarnProps[pProp] = Info;
 		}
 	}
+
+	for (itDualYarn = Textile.GetDualYarns().begin(), i ; itDualYarn != Textile.GetDualYarns().end(); ++itDualYarn, ++i)
+	{
+		//added by joe
+		//CYarn Yarn = *itYarn;
+		pProp = RenderDualYarn(*itDualYarn, pDomain, GetIndexedColor(i), dOpacity);
+
+		if (pProp)
+		{
+			PROP_YARN_INFO Info;
+			Info.iYarn = i;
+			Info.TextileName = Textile.GetName();
+			m_YarnProps[pProp] = Info;
+		}
+	}
+
 	EndBatch();
 }
 
@@ -567,6 +601,40 @@ vtkProp* CTexGenRenderer::RenderYarn(CYarn &Yarn, const CDomain *pDomain, COLOR 
 
 	return pActor;
 }
+// added for dual yarn by joe
+
+vtkProp* CTexGenRenderer::RenderDualYarn(CDualYarn &Yarn, const CDomain *pDomain, COLOR Color, double dOpacity)
+{
+	CMesh Mesh;
+
+	TGLOGINDENT("Adding yarn surface to renderer");
+	if (pDomain)
+		Yarn.AddSurfaceToMesh(Mesh, *pDomain);
+	else
+		Yarn.AddSurfaceToMesh(Mesh);
+
+	if (Mesh.NodesEmpty())
+		return NULL;
+
+	vtkActor *pActor;
+	vtkAlgorithm *pAlgorithm = CalculateNormals(GetPolyData(Mesh));
+
+	pActor = ConvertToActor(pAlgorithm);
+
+	pActor->GetProperty()->BackfaceCullingOn();
+	if (m_bXRay)
+		pActor->GetProperty()->SetRepresentationToWireframe();
+	//		pActor->GetProperty()->SetOpacity(0.75);
+	//	else
+	pActor->GetProperty()->SetOpacity(dOpacity);
+	ApplyColor(pActor, Color);
+
+
+	AddProp(PROP_SURFACE, pActor);
+
+	return pActor;
+}
+
 
 void CTexGenRenderer::RenderDomain(string TextileName, COLOR Color, double dOpacity)
 {

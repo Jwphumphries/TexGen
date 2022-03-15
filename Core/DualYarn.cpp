@@ -2,12 +2,16 @@
 #include "PrecompiledHeaders.h"
 #include "DualYarn.h"
 #include "SectionEllipse.h"
+#include "SectionOuter.h"
+//#include "Section.h"
 
 using namespace TexGen;
 
 CDualYarn::CDualYarn(void)
 {
-	AssignSection();
+	YarnType = "DualYarn";
+	AssignDefaults();
+
 }
 /*
 CDualYarn::CDualYarn(TiXmlElement &Element)
@@ -20,9 +24,26 @@ CDualYarn::~CDualYarn(void)
 
 }
 
-void CDualYarn::AssignSection()
+void CDualYarn::AssignDefaults()
 {
-	CYarn::AssignSection(CYarnSectionConstant(CSectionEllipse(2, 2)));
+	
+	
+};
+
+void CDualYarn::AssignSection(const CYarnSection &YarnSection)
+{
+	CYarn::AssignSection(YarnSection);
+
 }
+
+bool CDualYarn::BuildSections() const
+{
+	CYarn::BuildSections();
+
+	return true;
+}
+
+
+
 
 
