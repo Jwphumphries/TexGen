@@ -518,31 +518,16 @@ void CTexGenRenderer::RenderTextile(CTextile &Textile, double dOpacity)
 		pDomain = Textile.GetDomain();
 
 	vector<CYarn>::iterator itYarn;
-	vector<CDualYarn>::iterator itDualYarn; // added by joe
-	//vector<CYarn> Yarn;
-	bool dualyarn = true;
-	int i;
-	int j = 0;
+	vector<CDualYarn>::iterator itDualYarn;// added by joe
+
+	int i=0;
 	vtkProp* pProp;
 	BeginBatch();
-	for (itYarn = Textile.GetYarns().begin(), i=0; itYarn != Textile.GetYarns().end(); ++itYarn, ++i)
+	for (itYarn = Textile.GetYarns().begin(), i; itYarn != Textile.GetYarns().end(); ++itYarn, ++i)
 	{
-		//added by joe
-		//CYarn Yarn = *itYarn;
+	
 		pProp = RenderYarn(*itYarn, pDomain, GetIndexedColor(i), dOpacity);
-		/*
-		if (itYarn[i].YarnType=="DualYarn")
-		{
-			
-			pProp = RenderDualYarn(*Textile.GetDualYarn(j), pDomain, GetIndexedColor(i), dOpacity);
-			j++;
 
-		}
-		else
-		{
-			pProp = RenderYarn(*itYarn, pDomain, GetIndexedColor(i), dOpacity);
-		}
-		*/
 		if (pProp)
 		{
 			PROP_YARN_INFO Info;
@@ -551,11 +536,10 @@ void CTexGenRenderer::RenderTextile(CTextile &Textile, double dOpacity)
 			m_YarnProps[pProp] = Info;
 		}
 	}
-
+	// added by joe 
 	for (itDualYarn = Textile.GetDualYarns().begin(), i ; itDualYarn != Textile.GetDualYarns().end(); ++itDualYarn, ++i)
 	{
-		//added by joe
-		//CYarn Yarn = *itYarn;
+
 		pProp = RenderDualYarn(*itDualYarn, pDomain, GetIndexedColor(i), dOpacity);
 
 		if (pProp)
@@ -607,7 +591,7 @@ vtkProp* CTexGenRenderer::RenderDualYarn(CDualYarn &Yarn, const CDomain *pDomain
 {
 	CMesh Mesh;
 
-	TGLOGINDENT("Adding yarn surface to renderer");
+	TGLOGINDENT("Adding yarn surfaces to renderer");
 	if (pDomain)
 		Yarn.AddSurfaceToMesh(Mesh, *pDomain);
 	else

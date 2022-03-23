@@ -50,14 +50,22 @@ CTextile::~CTextile(void)
 CTextile &CTextile::operator=(const CTextile& CopyMe)
 {
 	m_Yarns = CopyMe.m_Yarns;
+	m_DualYarns = CopyMe.m_DualYarns;
 	m_bNeedsBuilding = CopyMe.m_bNeedsBuilding;
 	m_pDomain = CopyMe.m_pDomain;
 
 	// Yarns need to be reparented
 	vector<CYarn>::iterator itYarn;
+	vector<CDualYarn>::iterator itDualYarn;
 	for (itYarn = m_Yarns.begin(); itYarn != m_Yarns.end(); ++itYarn)
 	{
 		itYarn->SetParent(this);
+	}
+
+
+	for (itDualYarn = m_DualYarns.begin(); itDualYarn != m_DualYarns.end(); ++itDualYarn)
+	{
+		itDualYarn->SetParent(this);
 	}
 	return *this;
 }

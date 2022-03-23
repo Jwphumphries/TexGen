@@ -23,6 +23,7 @@ namespace TexGen
 
 		CObjectContainer<CYarnSection> m_pYarnSectionOuter;
 
+		//bool AddSurfaceToMesh(CMesh &Mesh, bool bAddEndCaps = true) const;
 		bool BuildSections() const;
 
 	
