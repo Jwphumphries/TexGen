@@ -590,15 +590,62 @@ vtkProp* CTexGenRenderer::RenderYarn(CYarn &Yarn, const CDomain *pDomain, COLOR 
 vtkProp* CTexGenRenderer::RenderDualYarn(CDualYarn &Yarn, const CDomain *pDomain, COLOR Color, double dOpacity)
 {
 	CMesh Mesh;
+	CMesh OuterMesh;
 
 	TGLOGINDENT("Adding yarn surfaces to renderer");
-	if (pDomain)
-		Yarn.AddSurfaceToMesh(Mesh, *pDomain);
-	else
-		Yarn.AddSurfaceToMesh(Mesh);
+	//if (pDomain)
+	//	Yarn.AddSurfaceToMesh(Mesh, *pDomain);
+	//else
+		Yarn.AddSurfaceToMesh(Mesh, OuterMesh);
+		RenderDualYarnOuter(OuterMesh, pDomain, Color, dOpacity);
+	
+		if (Mesh.NodesEmpty())
+		return NULL;
+	
 
+	vtkActor *pActor;
+	vtkAlgorithm *pAlgorithm = CalculateNormals(GetPolyData(Mesh));
+
+	pActor = ConvertToActor(pAlgorithm);
+
+	pActor->GetProperty()->BackfaceCullingOn();
+	if (m_bXRay)
+		pActor->GetProperty()->SetRepresentationToWireframe();
+	//		pActor->GetProperty()->SetOpacity(0.75);
+	//	else
+	pActor->GetProperty()->SetOpacity(dOpacity);
+	ApplyColor(pActor, Color);
+
+	
+
+	AddProp(PROP_SURFACE, pActor);
+	return pActor;
+	/*
+	vtkActor *pActor2;
+	vtkAlgorithm *pAlgorithm2 = CalculateNormals(GetPolyData(OuterMesh));
+
+	pActor2 = ConvertToActor(pAlgorithm2);
+
+	pActor2->GetProperty()->BackfaceCullingOn();
+	if (m_bXRay)
+		pActor2->GetProperty()->SetRepresentationToWireframe();
+	//		pActor->GetProperty()->SetOpacity(0.75);
+	//	else
+	pActor2->GetProperty()->SetOpacity(dOpacity);
+	ApplyColor(pActor2, Color);
+
+
+	AddProp(PROP_SURFACE, pActor2);
+
+	return pActor2;
+	*/
+}
+
+vtkProp* CTexGenRenderer::RenderDualYarnOuter(CMesh &Mesh, const CDomain *pDomain, COLOR Color, double dOpacity)
+{
 	if (Mesh.NodesEmpty())
 		return NULL;
+
 
 	vtkActor *pActor;
 	vtkAlgorithm *pAlgorithm = CalculateNormals(GetPolyData(Mesh));
@@ -614,8 +661,8 @@ vtkProp* CTexGenRenderer::RenderDualYarn(CDualYarn &Yarn, const CDomain *pDomain
 	ApplyColor(pActor, Color);
 
 
-	AddProp(PROP_SURFACE, pActor);
 
+	AddProp(PROP_SURFACE, pActor);
 	return pActor;
 }
 

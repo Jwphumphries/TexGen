@@ -42,7 +42,7 @@ namespace TexGen
 {
 	class CDomain;
 	class CTextile;
-	class CDualYarn; // added this here
+	class CDualYarn; // added by joe this here
 	
 	using namespace std;
 

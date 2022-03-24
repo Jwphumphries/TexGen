@@ -17,13 +17,15 @@ namespace TexGen
 
 		//string GetYarnType() const { return "DualYarn"; }
 
-
-		void AssignSection(const CYarnSection &YarnSection);
+	
+		void AssignSection();
+		void AssignSectionOuter(const CYarnSection &YarnSection);
 		void AssignDefaults();
+		void AddEndCapsToMeshOuter(CMesh &Mesh) const;
 
 		CObjectContainer<CYarnSection> m_pYarnSectionOuter;
 
-		//bool AddSurfaceToMesh(CMesh &Mesh, bool bAddEndCaps = true) const;
+		bool AddSurfaceToMesh(CMesh &Mesh, CMesh &OuterMesh, bool bAddEndCaps = true) const;
 		bool BuildSections() const;
 
 	

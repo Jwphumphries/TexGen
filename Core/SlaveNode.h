@@ -42,6 +42,8 @@ namespace TexGen
 		\param p2DSectionPoints Set m_Section to be equal to this, or NULL to leave m_Section unmodified
 		*/
 		void UpdateSectionPoints(const vector<XY> *p2DSectionPoints = NULL);
+		// added by joe
+		void UpdateSectionPointsOuter(const vector<XY> *p2DSectionPoints = NULL);
 
 		/// Calculate the 3D coordinates of a point on the cross-section
 		/**
@@ -72,7 +74,9 @@ namespace TexGen
 		int GetIndex() const { return m_iIndex; }
 		void SetIndex(int iIndex) { m_iIndex = iIndex; }
 		const vector<XYZ> &GetSectionPoints() const { return m_SectionPoints; }
+		const vector<XYZ> &GetSectionPointsOuter() const { return m_SectionPointsOuter; } // added by joe
 		const vector<XY> &Get2DSectionPoints() const { return m_2DSectionPoints; }
+		const vector<XY> &Get2DSectionPointsOuter() const { return m_2DSectionPointsOuter; }// added by joe
 		const CMesh &Get2DSectionMesh() const { return *m_2DSectionMesh; }
 		const CMesh &GetSectionMesh() const { return *m_SectionMesh; }
 
@@ -84,8 +88,14 @@ namespace TexGen
 	protected:
 		/// Coordinates of the cross-section edge points in 2D
 		vector<XY> m_2DSectionPoints;
+		//added by joe
+		/// Coordinates of the cross-section edge points in 2D 
+		vector<XY> m_2DSectionPointsOuter;
 		/// Coordinates of the cross-section edge points in 3D
 		vector<XYZ> m_SectionPoints;
+		// added by joe
+		/// Coordinates of the cross-section edge points in 3D
+		vector<XYZ> m_SectionPointsOuter;
 		/// Section mesh in 2D
 		CMesh* m_2DSectionMesh;
 		/// Section mesh in 3D

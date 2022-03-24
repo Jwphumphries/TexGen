@@ -114,6 +114,28 @@ void CSlaveNode::UpdateSectionPoints(const vector<XY> *p2DSectionPoints)
 	}
 }
 
+void CSlaveNode::UpdateSectionPointsOuter(const vector<XY> *p2DSectionPoints)
+{
+	if (p2DSectionPoints)
+		m_2DSectionPointsOuter = *p2DSectionPoints;
+	// Clear any existing section before creating the new one
+	m_SectionPointsOuter.clear();
+
+	vector<XY>::iterator it2DSectionPoint;
+	XYZ Pos;
+	XYZ Side = GetSide();
+	for (it2DSectionPoint = m_2DSectionPointsOuter.begin(); it2DSectionPoint != m_2DSectionPointsOuter.end(); ++it2DSectionPoint)
+	{
+		// Rotate the 2d section point to the global 3d coordinate system
+		Pos = Side * it2DSectionPoint->x;
+		Pos += m_Up * it2DSectionPoint->y;
+		// Translate the point to its global position
+		Pos += m_Position;
+		// Add the new 3d point to the list
+		m_SectionPointsOuter.push_back(Pos);
+	}
+}
+
 XYZ CSlaveNode::GetPointOnSection(const XY &p2DSectionPoint)
 {
 	vector<XY>::const_iterator it2DSectionPoint;

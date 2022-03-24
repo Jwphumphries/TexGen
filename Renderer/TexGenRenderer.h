@@ -120,7 +120,7 @@ namespace TexGen
 		vtkProp* RenderYarn(CYarn &Yarn, const CDomain *pDomain = NULL, COLOR Color = COLOR(1, 1, 1), double dOpacity = 1);
 		/// Render a Dual yarn with given color added by joe
 		vtkProp* RenderDualYarn(CDualYarn &Yarn, const CDomain *pDomain = NULL, COLOR Color = COLOR(1, 1, 1), double dOpacity = 1);
-
+		vtkProp* RenderDualYarnOuter(CMesh &Mesh, const CDomain *pDomain = NULL, COLOR Color = COLOR(1, 1, 1), double dOpacity = 1);
 		/// Create the volume mesh and add it to the scene to be rendered
 		/**
 		\param TextileName The name of the textile to be renderered, if left blank will render all textiles
