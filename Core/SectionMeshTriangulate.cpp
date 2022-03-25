@@ -149,4 +149,33 @@ CMesh CSectionMeshTriangulate::GetSimpleMesh(const vector<XY> &Section)
 	return Mesh;
 }
 
+CMesh CSectionMeshTriangulate::GetSimpleMeshOuter(const vector<XY> &SectionInner, const vector<XY> &SectionOuter)
+{
+	CMesh Mesh;
+
+	vector<int> ClosedLoopInner;
+	vector<int> ClosedLoopOuter;
+
+	vector<XY>::const_iterator itPoint;
+	int i;
+	for (i = 0, itPoint = SectionInner.begin(); itPoint != SectionInner.end(); ++itPoint, ++i)
+	{
+		Mesh.AddNode(XYZ(itPoint->x, itPoint->y, 0));
+		ClosedLoopInner.push_back(i);
+	}
+
+	for (i = 0, itPoint = SectionOuter.begin(); itPoint != SectionOuter.end(); ++itPoint, ++i)
+	{
+		Mesh.AddNode(XYZ(itPoint->x, itPoint->y, 0));
+		ClosedLoopOuter.push_back(i);
+	}
+
+
+
+	Mesh.MeshClosedLoopOuter(XYZ(0, 0, -1), ClosedLoopInner,ClosedLoopOuter);
+
+	return Mesh;
+}
+
+
 

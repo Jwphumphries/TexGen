@@ -277,6 +277,8 @@ namespace TexGen
 		\param bQuality Determines if the mesh should be of high quality (this will increase processing time)
 		*/
 		void MeshClosedLoop(const XYZ &Normal, const vector<int> &ClosedLoopVector, bool bQuality = false);
+		// added by joe
+		void MeshClosedLoopOuter(const XYZ &Normal, const vector<int> &ClosedLoopVectorInner, const vector<int> &ClosedLoopVectorOuter,bool bQuality = false);
 
 		/// Create a triangular convex hull of the nodes contained within the mesh.
 		/**

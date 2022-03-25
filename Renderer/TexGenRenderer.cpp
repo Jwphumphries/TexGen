@@ -597,7 +597,7 @@ vtkProp* CTexGenRenderer::RenderDualYarn(CDualYarn &Yarn, const CDomain *pDomain
 	//	Yarn.AddSurfaceToMesh(Mesh, *pDomain);
 	//else
 		Yarn.AddSurfaceToMesh(Mesh, OuterMesh);
-		RenderDualYarnOuter(OuterMesh, pDomain, Color, dOpacity);
+		RenderDualYarnOuter(OuterMesh, pDomain, GetIndexedColor(2), dOpacity);
 	
 		if (Mesh.NodesEmpty())
 		return NULL;

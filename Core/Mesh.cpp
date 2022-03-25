@@ -1339,7 +1339,36 @@ void CMesh::MeshClosedLoop(const XYZ &Normal, const vector<int> &ClosedLoopVecto
 		ClosedLoop.erase(itCurrent);
 	}
 }
+// added by joe
+void CMesh::MeshClosedLoopOuter(const XYZ &Normal, const vector<int> &ClosedLoopVectorInner, const vector<int> &ClosedLoopVectorOuter, bool bQuality)
+{
+	list<int> ClosedLoopInner(ClosedLoopVectorInner.begin(), ClosedLoopVectorInner.end());
+	list<int> ClosedLoopOuter(ClosedLoopVectorOuter.begin(), ClosedLoopVectorOuter.end());
 
+	list<int> &QuadIndices = m_Indices[CMesh::QUAD];
+
+
+	
+	int iNumPoints = ClosedLoopInner.size();
+	int i,v;
+	for (i = 0; i < iNumPoints;  ++i)
+	{
+
+	
+		v = i;
+		QuadIndices.push_back(v);
+		v = i + iNumPoints;
+		QuadIndices.push_back(v);
+		v = i + iNumPoints + 1; if (v == iNumPoints * 2) v = iNumPoints;
+		QuadIndices.push_back(v);
+		v = i + 1; if (v == iNumPoints) v = 0;
+		QuadIndices.push_back(v);
+		
+		
+
+	}
+	
+}
 
 /*void CMesh::MeshClosedLoop(const XYZ &Normal, const vector<int> &ClosedLoop)
 {

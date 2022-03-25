@@ -32,8 +32,8 @@ void CDualYarn::AssignDefaults()
 
 void CDualYarn::AssignSection()
 {
-	CYarn::AssignSection(CYarnSectionConstant(CSectionEllipse(0.5, 1)));
-	AssignSectionOuter(CYarnSectionConstant(CSectionEllipse(1, 0.5)));
+	CYarn::AssignSection(CYarnSectionConstant(CSectionEllipse(1, 0.5)));
+	AssignSectionOuter(CYarnSectionConstant(CSectionEllipse(1.5, 1)));
 }
 
 void CDualYarn::AssignSectionOuter(const CYarnSection &YarnSection)
@@ -221,9 +221,9 @@ void CDualYarn::AddEndCapsToMeshOuter(CMesh &Mesh) const
 
 	CMesh StartMesh, EndMesh;
 
-	StartMesh = CSectionMeshTriangulate::GetSimpleMesh(StartNode.Get2DSectionPointsOuter());
-	EndMesh = CSectionMeshTriangulate::GetSimpleMesh(EndNode.Get2DSectionPointsOuter());
-
+	StartMesh = CSectionMeshTriangulate::GetSimpleMeshOuter(StartNode.Get2DSectionPoints(),StartNode.Get2DSectionPointsOuter());
+	EndMesh = CSectionMeshTriangulate::GetSimpleMeshOuter(EndNode.Get2DSectionPoints(),EndNode.Get2DSectionPointsOuter());
+	
 	XYZ StartSide = CrossProduct(StartNode.GetTangent(), StartNode.GetUp());
 	XYZ EndSide = CrossProduct(EndNode.GetTangent(), EndNode.GetUp());
 
@@ -231,7 +231,7 @@ void CDualYarn::AddEndCapsToMeshOuter(CMesh &Mesh) const
 	EndMesh.Rotate(WXYZ(EndSide, EndNode.GetUp(), -EndNode.GetTangent()));
 
 	EndMesh.FlipNormals();
-
+	
 	Mesh.InsertMesh(StartMesh, StartNode.GetPosition());
 	Mesh.InsertMesh(EndMesh, EndNode.GetPosition());
 }
