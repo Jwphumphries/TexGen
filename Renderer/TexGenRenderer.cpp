@@ -540,7 +540,7 @@ void CTexGenRenderer::RenderTextile(CTextile &Textile, double dOpacity)
 	for (itDualYarn = Textile.GetDualYarns().begin(), i ; itDualYarn != Textile.GetDualYarns().end(); ++itDualYarn, ++i)
 	{
 
-		pProp = RenderDualYarn(*itDualYarn, pDomain, GetIndexedColor(i), dOpacity);
+		pProp = RenderDualYarn(*itDualYarn,i, pDomain, GetIndexedColor(i), dOpacity);
 
 		if (pProp)
 		{
@@ -587,7 +587,7 @@ vtkProp* CTexGenRenderer::RenderYarn(CYarn &Yarn, const CDomain *pDomain, COLOR 
 }
 // added for dual yarn by joe
 
-vtkProp* CTexGenRenderer::RenderDualYarn(CDualYarn &Yarn, const CDomain *pDomain, COLOR Color, double dOpacity)
+vtkProp* CTexGenRenderer::RenderDualYarn(CDualYarn &Yarn,int i, const CDomain *pDomain, COLOR Color, double dOpacity)
 {
 	CMesh Mesh;
 	CMesh OuterMesh;
@@ -597,7 +597,7 @@ vtkProp* CTexGenRenderer::RenderDualYarn(CDualYarn &Yarn, const CDomain *pDomain
 	//	Yarn.AddSurfaceToMesh(Mesh, *pDomain);
 	//else
 		Yarn.AddSurfaceToMesh(Mesh, OuterMesh);
-		RenderDualYarnOuter(OuterMesh, pDomain, GetIndexedColor(2), dOpacity);
+		RenderDualYarnOuter(OuterMesh, pDomain, Color, dOpacity);
 	
 		if (Mesh.NodesEmpty())
 		return NULL;
@@ -614,7 +614,7 @@ vtkProp* CTexGenRenderer::RenderDualYarn(CDualYarn &Yarn, const CDomain *pDomain
 	//		pActor->GetProperty()->SetOpacity(0.75);
 	//	else
 	pActor->GetProperty()->SetOpacity(dOpacity);
-	ApplyColor(pActor, Color);
+	ApplyColor(pActor, GetIndexedColor(i+1));
 
 	
 
@@ -717,6 +717,7 @@ void CTexGenRenderer::RenderMesh(CTextile &Textile)
 		pDomain = Textile.GetDomain();
 
 	vector<CYarn>::iterator itYarn;
+	vector<CDualYarn>::iterator itDualYarn;// added by joe
 
 	int i;
 	vtkProp* pProp;
@@ -732,6 +733,19 @@ void CTexGenRenderer::RenderMesh(CTextile &Textile)
 			m_YarnProps[pProp] = Info;
 		}
 	}
+
+	for (itDualYarn = Textile.GetDualYarns().begin(), i = 0; itDualYarn != Textile.GetDualYarns().end(); ++itDualYarn, ++i)
+	{
+		pProp = RenderDualYarnMesh(*itDualYarn,i, pDomain, GetIndexedColor(i));
+		if (pProp)
+		{
+			PROP_YARN_INFO Info;
+			Info.iYarn = i;
+			Info.TextileName = Textile.GetName();
+			m_YarnProps[pProp] = Info;
+		}
+	}
+
 	EndBatch();
 }
 
@@ -758,6 +772,55 @@ vtkProp* CTexGenRenderer::RenderYarnMesh(CYarn &Yarn, const CDomain *pDomain, CO
 
 	AddProp(PROP_VOLUME, pActor);
 
+	return pActor;
+}
+
+vtkProp* CTexGenRenderer::RenderDualYarnMesh(CDualYarn &Yarn,int i, const CDomain *pDomain, COLOR Color)
+{
+	CMesh Mesh;
+	CMesh OuterMesh;
+
+	TGLOGINDENT("Adding yarn volume mesh to renderer");
+	//if (pDomain)
+		//Yarn.AddVolumeToMesh(Mesh, *pDomain);
+	//else
+		Yarn.AddVolumeToMesh(Mesh,OuterMesh);
+		RenderDualYarnMeshOuter(OuterMesh, pDomain, Color);
+
+	if (Mesh.NodesEmpty())
+		return NULL;
+
+	vtkActor *pActor;
+	vtkAlgorithm *pAlgorithm = CalculateNormals(GetPolyData(Mesh));
+
+	pActor = ConvertToActor(pAlgorithm);
+	pActor->GetProperty()->SetRepresentationToWireframe();
+	ApplyColor(pActor, GetIndexedColor(i+1));
+
+
+	AddProp(PROP_VOLUME, pActor);
+
+	return pActor;
+}
+
+vtkProp* CTexGenRenderer::RenderDualYarnMeshOuter(CMesh &Mesh, const CDomain *pDomain, COLOR Color)
+{
+	if (Mesh.NodesEmpty())
+		return NULL;
+
+
+	vtkActor *pActor;
+	vtkAlgorithm *pAlgorithm = CalculateNormals(GetPolyData(Mesh));
+
+	pActor = ConvertToActor(pAlgorithm);
+
+	//pActor->GetProperty()->BackfaceCullingOn();
+	pActor->GetProperty()->SetRepresentationToWireframe();
+	ApplyColor(pActor, Color);
+
+
+
+	AddProp(PROP_VOLUME, pActor);
 	return pActor;
 }
 

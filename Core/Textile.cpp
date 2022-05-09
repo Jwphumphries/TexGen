@@ -592,7 +592,7 @@ int CTextile::DetectInterference(vector<float> &DistanceToSurface, vector<int> &
 
 	if (pInterferingPoints)
 		pInterferingPoints->Clear();
-
+	
 	TGLOGINDENT("Detecting interference between yarns in textile \"" << GetName() << "\"");
 	int iIntersections = 0;
 	vector<CYarn>::iterator itYarn;
@@ -744,6 +744,12 @@ int CTextile::GetNumYarns() const
 {
 	BuildTextileIfNeeded();
 	return (int)m_Yarns.size();
+}
+// added by joe
+int CTextile::GetNumDualYarns() const
+{
+	BuildTextileIfNeeded();
+	return (int)m_DualYarns.size();
 }
 
 bool CTextile::BuildTextileIfNeeded() const

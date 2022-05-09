@@ -73,6 +73,7 @@ void CSection::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputTyp
 void CSection::AssignDefaults()
 {
 	m_pSectionMesh = CSectionMeshRectangular();
+	m_pSectionMeshOuter = CSectionMeshOuter();
 }
 
 CObjectContainer<CSection> CSection::CreateSection(TiXmlElement &Element)
@@ -114,6 +115,20 @@ const CMesh &CSection::GetMesh(int iNumPoints, bool bEquiSpaced) const
 	}
 	const vector<XY> &Section = GetPoints(iNumPoints, bEquiSpaced);
 	return m_pSectionMesh->GetMesh(Section);
+}
+
+const CMesh &CSection::GetMeshOuter(int iNumPoints, bool bEquiSpaced) const
+{
+	
+	if (!m_pSectionMeshOuter)
+	{
+		TGERROR("Unable to get section mesh, section has no mesh assigned to it: " + GetDefaultName());
+		static CMesh EmptyMesh;
+		return EmptyMesh;
+	}
+	
+	const vector<XY> &Section = GetPoints(iNumPoints, bEquiSpaced);
+	return m_pSectionMeshOuter->GetMesh(Section);
 }
 
 const vector<XY> &CSection::GetPoints(int iNumPoints, bool bEquiSpaced) const

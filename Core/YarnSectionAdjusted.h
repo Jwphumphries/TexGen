@@ -38,6 +38,7 @@ namespace TexGen
 
 		vector<XY> GetSection(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced = false) const;
 		CMesh GetSectionMesh(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced) const;
+		CMesh GetSectionMeshOuter(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced) const; // sdded by joe to fix abstract class issue
 
 		/// At given index and value t the position of the node should be adjusted by given vector
 		void AddAdjustment(int iIndex, double t, const vector<pair<double, XY> > &SectionAdjust);

@@ -27,7 +27,8 @@ namespace TexGen
 
 		bool AddSurfaceToMesh(CMesh &Mesh, CMesh &OuterMesh, bool bAddEndCaps = true) const;
 		bool BuildSections() const;
-
+		bool BuildSectionMeshes() const;
+		bool AddVolumeToMesh(CMesh &Mesh, CMesh &OuterMesh) const;
 	
 
 	};

@@ -211,7 +211,7 @@ namespace TexGen
 		/**
 		\param Mesh Mesh to add elements to
 		*/
-		bool AddVolumeToMesh(CMesh &Mesh) const;
+		virtual bool AddVolumeToMesh(CMesh &Mesh) const;
 
 		/// Create volume mesh for this yarn and add it to the volume mesh object
 		/**
@@ -488,7 +488,7 @@ namespace TexGen
 
 		bool BuildSlaveNodes() const;
 		virtual bool BuildSections() const; // made virtual by joe
-		bool BuildSectionMeshes() const;
+		virtual bool BuildSectionMeshes() const; // made virtual by joe
 
 		/// Add end caps to the mesh
 		void AddEndCapsToMesh(CMesh &Mesh) const;

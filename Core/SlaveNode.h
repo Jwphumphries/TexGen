@@ -61,6 +61,7 @@ namespace TexGen
 		\param p2DSectionMesh Set m_SectionMesh to be equal to this, or NULL to leave m_SectionMesh unmodified
 		*/
 		void UpdateSectionMesh(const CMesh *p2DSectionMesh = NULL);
+		void UpdateSectionMeshOuter(const CMesh *p2DSectionMesh = NULL); // added by joe
 
 		/// Rotate the Node by given quaternion
 		void Rotate(WXYZ Rotation);
@@ -79,6 +80,8 @@ namespace TexGen
 		const vector<XY> &Get2DSectionPointsOuter() const { return m_2DSectionPointsOuter; }// added by joe
 		const CMesh &Get2DSectionMesh() const { return *m_2DSectionMesh; }
 		const CMesh &GetSectionMesh() const { return *m_SectionMesh; }
+		const CMesh &Get2DSectionMeshOuter() const { return *m_2DSectionMeshOuter; } // added by joe
+		const CMesh &GetSectionMeshOuter() const { return *m_SectionMeshOuter; } // added by joe
 
 		inline bool operator < ( const CSlaveNode &right)
 		{
@@ -98,8 +101,12 @@ namespace TexGen
 		vector<XYZ> m_SectionPointsOuter;
 		/// Section mesh in 2D
 		CMesh* m_2DSectionMesh;
+		/// Section mesh dual yarn outer in 2D added by joe
+		CMesh* m_2DSectionMeshOuter;
 		/// Section mesh in 3D
 		CMesh* m_SectionMesh;
+		/// Section mesh of dual yarn outer in 3D added by joe
+		CMesh* m_SectionMeshOuter;
 		/// T is the parameter which varies from 0 to 1 which tells us how far along the link the node is.
 		double m_T;
 		/// Index which determines between which master nodes this slave node lies, varies from 0 to number of nodes - 1

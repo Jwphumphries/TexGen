@@ -66,6 +66,8 @@ namespace TexGen
 
 		CMesh m_SurfaceMesh;
 		vector<CMesh> m_YarnMeshes;
+		vector<CMesh> m_DualYarnMeshesInner; // added by joe
+		vector<CMesh> m_DualYarnMeshesOuter; // added by joe
 		vector<POINT_INFO> m_ElementInfo;
 
 		map<YarnNumber, int> m_ElementIndexOffsets;

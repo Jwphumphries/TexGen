@@ -145,6 +145,56 @@ bool CDualYarn::BuildSections() const
 
 }
 
+bool CDualYarn::BuildSectionMeshes() const
+{
+
+	CYarn::BuildSectionMeshes();
+
+	TGLOG("Building yarn section meshes");
+	if (m_SlaveNodes.empty())
+	{
+		TGERROR("Unable to build section meshes, no slave nodes created");
+		assert(false);
+		return false;
+	}
+	if (!m_pYarnSectionOuter)
+	{
+		TGERROR("Unable to build section meshes, no yarn section specified");
+		assert(false);
+		return false;
+	}
+
+	if (m_pYarnSectionOuter->GetForceMeshLayers())
+	{
+		m_pYarnSectionOuter->SetSectionMeshLayersEqual(m_iNumSectionPoints);
+	}
+
+	YARN_POSITION_INFORMATION YarnPositionInfo;
+	YarnPositionInfo.SectionLengths = m_SectionLengths;
+
+	vector<XY> Section;
+	CMesh Mesh;
+	vector<CSlaveNode>::iterator itSlaveNode;
+	XYZ PrevPos = m_SlaveNodes[0].GetPosition();
+
+	for (itSlaveNode = m_SlaveNodes.begin(); itSlaveNode != m_SlaveNodes.end(); ++itSlaveNode)
+	{
+		YarnPositionInfo.dSectionPosition = itSlaveNode->GetT();
+		YarnPositionInfo.iSection = itSlaveNode->GetIndex();
+
+		Mesh = m_pYarnSectionOuter->GetSectionMeshOuter(YarnPositionInfo, m_iNumSectionPoints, m_bEquiSpacedSectionMesh);
+		if (Mesh.GetNumNodes() == 0)
+			return false;
+		itSlaveNode->UpdateSectionMeshOuter(&Mesh);
+
+		PrevPos = itSlaveNode->GetPosition();
+	}
+
+	// Volume mesh points are built
+	m_iNeedsBuilding &= ALL ^ VOLUME;
+	return true;
+}
+
 bool CDualYarn::AddSurfaceToMesh(CMesh &Mesh, CMesh &OuterMesh, bool bAddEndCaps) const
 {
 
@@ -234,4 +284,106 @@ void CDualYarn::AddEndCapsToMeshOuter(CMesh &Mesh) const
 	
 	Mesh.InsertMesh(StartMesh, StartNode.GetPosition());
 	Mesh.InsertMesh(EndMesh, EndNode.GetPosition());
+}
+
+bool CDualYarn::AddVolumeToMesh(CMesh &Mesh, CMesh &OuterMesh) const
+{
+	CYarn::AddVolumeToMesh(Mesh);
+
+	TGLOG("Adding yarn volume to mesh");
+	// Build the yarn with section meshes if needed
+	if (!BuildYarnIfNeeded(VOLUME))
+		return false;
+
+	// Check the section meshes are compatible
+	bool bFirst = true;
+	CMesh ReferenceMesh;
+	//    int iNumNodes = (int)m_SlaveNodes.size();
+	vector<CSlaveNode>::iterator itNode;
+	for (itNode = m_SlaveNodes.begin(); itNode != m_SlaveNodes.end(); ++itNode)
+	{
+		if (bFirst)
+		{
+			ReferenceMesh = itNode->GetSectionMeshOuter();
+			bFirst = false;
+		}
+		else
+		{
+			// Check mesh is compatible
+			bool bCompatible = ReferenceMesh.GetNumNodes() == itNode->GetSectionMeshOuter().GetNumNodes();
+			int i;
+			for (i = 0; i < CMesh::NUM_ELEMENT_TYPES; ++i)
+			{
+				if (!bCompatible)
+					break;
+				if (ReferenceMesh.GetIndices((CMesh::ELEMENT_TYPE)i) != itNode->GetSectionMeshOuter().GetIndices((CMesh::ELEMENT_TYPE)i))
+					bCompatible = false;
+			}
+			if (!bCompatible)
+			{
+				// Cannot create surface mesh if the section meshes are not compatible
+				TGERROR("Unable to create volume mesh, not all section meshes are compatible");
+				assert(false);
+				return false;
+			}
+		}
+	}
+
+	// Add nodes and elements to the mesh
+	list<int>::const_iterator itIndex;
+	int iPrevIndex = -1;
+	int iIndex;
+	int aiTriangles[3];
+	int aiQuads[4];
+	for (itNode = m_SlaveNodes.begin(); itNode != m_SlaveNodes.end(); ++itNode)
+	{
+		const CMesh &SectionMesh = itNode->GetSectionMeshOuter();
+		iIndex = OuterMesh.InsertNodes(SectionMesh);
+		const list<int> &PolygonIndices = SectionMesh.GetIndices(CMesh::POLYGON);
+		for (itIndex = PolygonIndices.begin(); itIndex != PolygonIndices.end(); ++itIndex)
+		{
+			OuterMesh.GetIndices(CMesh::POLYGON).push_back(*(itIndex)+iIndex);
+		}
+
+		if (iPrevIndex != -1)
+		{
+			const list<int> &TriIndices = SectionMesh.GetIndices(CMesh::TRI);
+			for (itIndex = TriIndices.begin(); itIndex != TriIndices.end(); )
+			{
+				aiTriangles[0] = *(itIndex++);
+				aiTriangles[1] = *(itIndex++);
+				aiTriangles[2] = *(itIndex++);
+
+				// Element node ordering as defined in VTK
+				OuterMesh.GetIndices(CMesh::WEDGE).push_back(aiTriangles[0] + iPrevIndex);
+				OuterMesh.GetIndices(CMesh::WEDGE).push_back(aiTriangles[1] + iPrevIndex);
+				OuterMesh.GetIndices(CMesh::WEDGE).push_back(aiTriangles[2] + iPrevIndex);
+
+				OuterMesh.GetIndices(CMesh::WEDGE).push_back(aiTriangles[0] + iIndex);
+				OuterMesh.GetIndices(CMesh::WEDGE).push_back(aiTriangles[1] + iIndex);
+				OuterMesh.GetIndices(CMesh::WEDGE).push_back(aiTriangles[2] + iIndex);
+			}
+			const list<int> &QuadIndices = SectionMesh.GetIndices(CMesh::QUAD);
+			for (itIndex = QuadIndices.begin(); itIndex != QuadIndices.end(); )
+			{
+				aiQuads[0] = *(itIndex++);
+				aiQuads[1] = *(itIndex++);
+				aiQuads[2] = *(itIndex++);
+				aiQuads[3] = *(itIndex++);
+
+				// Element node ordering as defined in VTK
+				OuterMesh.GetIndices(CMesh::HEX).push_back(aiQuads[0] + iIndex);
+				OuterMesh.GetIndices(CMesh::HEX).push_back(aiQuads[1] + iIndex);
+				OuterMesh.GetIndices(CMesh::HEX).push_back(aiQuads[2] + iIndex);
+				OuterMesh.GetIndices(CMesh::HEX).push_back(aiQuads[3] + iIndex);
+
+				OuterMesh.GetIndices(CMesh::HEX).push_back(aiQuads[0] + iPrevIndex);
+				OuterMesh.GetIndices(CMesh::HEX).push_back(aiQuads[1] + iPrevIndex);
+				OuterMesh.GetIndices(CMesh::HEX).push_back(aiQuads[2] + iPrevIndex);
+				OuterMesh.GetIndices(CMesh::HEX).push_back(aiQuads[3] + iPrevIndex);
+			}
+		}
+		iPrevIndex = iIndex;
+	}
+	return true;
 }

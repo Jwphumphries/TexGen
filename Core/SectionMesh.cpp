@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SectionMeshTriangulate.h"
 #include "SectionMeshRectangular.h"
 #include "SectionMeshRectangleSection.h"
-
+#include "SectionMeshOuter.h"
 using namespace TexGen;
 CSectionMesh::CSectionMesh(void)
 {

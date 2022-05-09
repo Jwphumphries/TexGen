@@ -39,7 +39,8 @@ bool CShellElementExport::SaveShellElementToABAQUS(string Filename, CTextile& Te
 	Filename = ReplaceFilenameSpaces( Filename );
 
 	int iNumYarns = Textile.GetNumYarns();
-	if (iNumYarns == 0)
+	int iNumDualYarns = Textile.GetNumDualYarns(); // added by joe
+	if (iNumYarns == 0 && iNumDualYarns ==0)
 		return false;
 	const CDomain* pDomain = Textile.GetDomain();
 	if (!pDomain)
@@ -51,7 +52,11 @@ bool CShellElementExport::SaveShellElementToABAQUS(string Filename, CTextile& Te
 	m_YarnMeshes.clear();
 	int i;
 	m_YarnMeshes.resize(iNumYarns);
-
+	// added by joe
+	m_DualYarnMeshesInner.clear();
+	m_DualYarnMeshesInner.resize(iNumDualYarns);
+	m_DualYarnMeshesOuter.clear();
+	m_DualYarnMeshesOuter.resize(iNumDualYarns);
 	
 	for (i=0; i<iNumYarns; ++i)  // Create surface mesh for each yarn 
 	{
@@ -65,6 +70,22 @@ bool CShellElementExport::SaveShellElementToABAQUS(string Filename, CTextile& Te
 		if ( !bMesh )
 		{
 			TGERROR("Unable to create ABAQUS input file: Failed to create surface mesh for yarn " << i );
+			return false;
+		}
+	}
+	// added by joe
+	for (i = 0; i < iNumDualYarns; ++i)  // Create surface mesh for each yarn 
+	{
+		CDualYarn* pYarn = Textile.GetDualYarn(i);
+		bool bMesh = false;
+		//if (m_bTrimSurface)
+			//bMesh = pYarn->AddSurfaceToMesh(m_YarnMeshes[i], *pDomain);
+		//else
+			bMesh = pYarn->AddSurfaceToMesh(m_DualYarnMeshesInner[i], m_DualYarnMeshesOuter[i]);
+
+		if (!bMesh)
+		{
+			TGERROR("Unable to create ABAQUS input file: Failed to create surface mesh for yarn " << i);
 			return false;
 		}
 	}

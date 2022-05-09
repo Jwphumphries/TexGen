@@ -37,6 +37,7 @@ namespace TexGen
 
 		vector<XY> GetSection(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced = false) const;
 		CMesh GetSectionMesh(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced) const;
+		CMesh GetSectionMeshOuter(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced) const; // added by joe
 
 		// Accessor methods
 		const CSection &GetSection() const { return *m_pSection; }

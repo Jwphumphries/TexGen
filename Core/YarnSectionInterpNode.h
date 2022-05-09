@@ -47,6 +47,7 @@ namespace TexGen
 
 		vector<XY> GetSection(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced = false) const;
 		CMesh GetSectionMesh(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced) const;
+		CMesh GetSectionMeshOuter(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced) const; // added by joe
 		CYarnSection* Copy() const { return new CYarnSectionInterpNode(*this); }
 		string GetType() const { return "CYarnSectionInterpNode"; }
 		void PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType) const;

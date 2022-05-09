@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SectionMeshTriangulate.h"
 #include "SectionMeshRectangular.h"
 #include "SectionMeshRectangleSection.h"
+#include "SectionMeshOuter.h" 
 
 namespace TexGen
 { 
@@ -65,6 +66,7 @@ namespace TexGen
 		/// to the section before this function is called.
 		const CMesh &GetMesh(int iNumPoints, bool bEquiSpaced = true) const;
 
+		const CMesh &GetMeshOuter(int iNumPoints, bool bEquiSpaced = true) const;
 		/// Get the area of a section
 		static double GetArea(const vector<XY> &Section);
 
@@ -123,6 +125,7 @@ namespace TexGen
 
 		/// Pointer to a derived class of SectionMesh, this class is in charge of creating the section mesh
 		CObjectContainer<CSectionMesh> m_pSectionMesh;
+		CObjectContainer<CSectionMesh> m_pSectionMeshOuter;
 
 	private:
 		void AssignDefaults();

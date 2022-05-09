@@ -27,6 +27,8 @@ CSlaveNode::CSlaveNode(XYZ Position, XYZ Tangent, XYZ Up)
 ,m_iIndex(0)
 ,m_2DSectionMesh(NULL)
 ,m_SectionMesh(NULL)
+,m_2DSectionMeshOuter(NULL)
+,m_SectionMeshOuter(NULL)
 {
 }
 
@@ -36,6 +38,11 @@ CSlaveNode::~CSlaveNode(void)
 		delete m_2DSectionMesh;
 	if ( m_SectionMesh != NULL )
 		delete m_SectionMesh;
+	if (m_2DSectionMeshOuter != NULL)
+		delete m_2DSectionMeshOuter;
+	if (m_SectionMeshOuter != NULL)
+		delete m_SectionMeshOuter;
+
 }
 
 CSlaveNode::CSlaveNode(TiXmlElement &Element)
@@ -185,6 +192,43 @@ void CSlaveNode::UpdateSectionMesh(const CMesh *p2DSectionMesh)
 	for (i=0; i<CMesh::NUM_ELEMENT_TYPES; ++i)
 	{
 		m_SectionMesh->GetIndices((CMesh::ELEMENT_TYPE)i) = m_2DSectionMesh->GetIndices((CMesh::ELEMENT_TYPE)i);
+	}
+}
+
+void CSlaveNode::UpdateSectionMeshOuter(const CMesh *p2DSectionMesh)
+{
+	if (p2DSectionMesh)
+	{
+		if (m_2DSectionMeshOuter == NULL)
+			m_2DSectionMeshOuter = new CMesh;
+		else
+			m_2DSectionMeshOuter->Clear();
+		*m_2DSectionMeshOuter = *p2DSectionMesh;
+	}
+	// Clear any existing section mesh before creating the new one
+	if (m_SectionMeshOuter == NULL)
+		m_SectionMeshOuter = new CMesh;
+	else
+		m_SectionMeshOuter->Clear();
+
+	vector<XYZ>::iterator itNode;
+	XYZ Pos;
+	XYZ Side = GetSide();
+	vector<XYZ> MeshNodes2D = m_2DSectionMeshOuter->GetNodes();
+
+	for (itNode = MeshNodes2D.begin(); itNode != MeshNodes2D.end(); ++itNode)
+	{
+		// Rotate the 2d section point to the global 3d coordinate system
+		Pos = Side * itNode->x;
+		Pos += m_Up * itNode->y;
+		// Translate the point to its global position
+		Pos += m_Position;
+		m_SectionMeshOuter->AddNode(Pos);
+	}
+	int i;
+	for (i = 0; i < CMesh::NUM_ELEMENT_TYPES; ++i)
+	{
+		m_SectionMeshOuter->GetIndices((CMesh::ELEMENT_TYPE)i) = m_2DSectionMeshOuter->GetIndices((CMesh::ELEMENT_TYPE)i);
 	}
 }
 

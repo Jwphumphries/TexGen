@@ -119,6 +119,11 @@ CMesh CYarnSectionAdjusted::GetSectionMesh(const YARN_POSITION_INFORMATION Posit
 	return m_pYarnSection->GetSectionMesh(PositionInfo, iNumPoints, bEquiSpaced);
 }
 
+CMesh TexGen::CYarnSectionAdjusted::GetSectionMeshOuter(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced) const
+{
+	return CMesh();
+}
+
 void CYarnSectionAdjusted::AddAdjustment(int iIndex, double t, const vector<pair<double, XY> > &SectionAdjust)
 {
 	if (iIndex < 0)

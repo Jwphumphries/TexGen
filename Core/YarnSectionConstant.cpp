@@ -64,4 +64,10 @@ CMesh CYarnSectionConstant::GetSectionMesh(const YARN_POSITION_INFORMATION Posit
 	return m_pSection->GetMesh(iNumPoints, bEquiSpaced);
 }
 
+CMesh CYarnSectionConstant::GetSectionMeshOuter(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced) const
+{
+	// return the same section ignoring the information given in PositionInfo
+	return m_pSection->GetMeshOuter(iNumPoints, bEquiSpaced);
+}
+
 

@@ -171,6 +171,11 @@ CMesh CYarnSectionInterpPosition::GetSectionMesh(const YARN_POSITION_INFORMATION
 	return Mesh;
 }
 
+CMesh TexGen::CYarnSectionInterpPosition::GetSectionMeshOuter(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced) const
+{
+	return CMesh();
+}
+
 void CYarnSectionInterpPosition::AddSection(double dPosition, const CSection &Section)
 {
 	m_Sections.push_back(pair<double, CObjectContainer<CSection> >(dPosition, Section));

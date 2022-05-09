@@ -92,7 +92,7 @@ namespace TexGen
 		\param bEquiSpaced Create the points such that they are all equispaced or not
 		*/
 		virtual CMesh GetSectionMesh(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced) const = 0;
-
+		virtual CMesh GetSectionMeshOuter(const YARN_POSITION_INFORMATION PositionInfo, int iNumPoints, bool bEquiSpaced) const =0;
 		/// Find max value for iNumLayers in section meshes and set iNumLayers to that value
 		virtual void SetSectionMeshLayersEqual( int iNumPoints ) const {return;}
 

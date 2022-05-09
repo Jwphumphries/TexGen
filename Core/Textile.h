@@ -282,6 +282,7 @@ namespace TexGen
 
 		// Accessor methods
 		int GetNumYarns() const;
+		int GetNumDualYarns() const;
 		const CYarn *GetYarn(int iIndex) const;
 		CYarn *GetYarn(int iIndex);
 		const vector<CYarn> &GetYarns() const;
