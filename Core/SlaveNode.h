@@ -91,13 +91,11 @@ namespace TexGen
 	protected:
 		/// Coordinates of the cross-section edge points in 2D
 		vector<XY> m_2DSectionPoints;
-		//added by joe
-		/// Coordinates of the cross-section edge points in 2D 
+		/// Coordinates of the dual yarn outer cross-section edge points in 2D added by joe
 		vector<XY> m_2DSectionPointsOuter;
 		/// Coordinates of the cross-section edge points in 3D
 		vector<XYZ> m_SectionPoints;
-		// added by joe
-		/// Coordinates of the cross-section edge points in 3D
+		/// Coordinates of the outer cross-section edge points in 3D
 		vector<XYZ> m_SectionPointsOuter;
 		/// Section mesh in 2D
 		CMesh* m_2DSectionMesh;

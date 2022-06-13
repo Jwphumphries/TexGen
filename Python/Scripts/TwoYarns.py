@@ -1,0 +1,11 @@
+#creates 2 yarns one mono and one dual
+textile = CTextile()
+yarn = CYarn()
+yarn.AddNode(CNode(XYZ(0, 0, 0)))
+yarn.AddNode(CNode(XYZ(10, 0, 0)))
+textile.AddYarn(yarn)
+yarn = CDualYarn()
+yarn.AddNode(CNode(XYZ(0, 3, 0)))
+yarn.AddNode(CNode(XYZ(10, 3, 0)))
+textile.AddDualYarn(yarn)
+AddTextile("two yarns",textile)

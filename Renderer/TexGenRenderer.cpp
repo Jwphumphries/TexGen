@@ -518,7 +518,7 @@ void CTexGenRenderer::RenderTextile(CTextile &Textile, double dOpacity)
 		pDomain = Textile.GetDomain();
 
 	vector<CYarn>::iterator itYarn;
-	vector<CDualYarn>::iterator itDualYarn;// added by joe
+	vector<CDualYarn>::iterator itDualYarn;// added by joe, required to iterate through dual yarns in a textile
 
 	int i=0;
 	vtkProp* pProp;
@@ -536,7 +536,7 @@ void CTexGenRenderer::RenderTextile(CTextile &Textile, double dOpacity)
 			m_YarnProps[pProp] = Info;
 		}
 	}
-	// added by joe 
+	// added by joe, iterates through itDualYarn 
 	for (itDualYarn = Textile.GetDualYarns().begin(), i ; itDualYarn != Textile.GetDualYarns().end(); ++itDualYarn, ++i)
 	{
 
@@ -585,7 +585,6 @@ vtkProp* CTexGenRenderer::RenderYarn(CYarn &Yarn, const CDomain *pDomain, COLOR 
 
 	return pActor;
 }
-// added for dual yarn by joe
 
 vtkProp* CTexGenRenderer::RenderDualYarn(CDualYarn &Yarn,int i, const CDomain *pDomain, COLOR Color, double dOpacity)
 {
@@ -717,7 +716,7 @@ void CTexGenRenderer::RenderMesh(CTextile &Textile)
 		pDomain = Textile.GetDomain();
 
 	vector<CYarn>::iterator itYarn;
-	vector<CDualYarn>::iterator itDualYarn;// added by joe
+	vector<CDualYarn>::iterator itDualYarn;// added by joe, used to iterate through dual yarns
 
 	int i;
 	vtkProp* pProp;

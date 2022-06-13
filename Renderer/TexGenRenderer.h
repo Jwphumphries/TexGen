@@ -120,6 +120,7 @@ namespace TexGen
 		vtkProp* RenderYarn(CYarn &Yarn, const CDomain *pDomain = NULL, COLOR Color = COLOR(1, 1, 1), double dOpacity = 1);
 		/// Render a Dual yarn with given color added by joe
 		vtkProp* RenderDualYarn(CDualYarn &Yarn, int i, const CDomain *pDomain = NULL, COLOR Color = COLOR(1, 1, 1), double dOpacity = 1);
+		///USed to render the outersection of a dual yarn
 		vtkProp* RenderDualYarnOuter(CMesh &Mesh, const CDomain *pDomain = NULL, COLOR Color = COLOR(1, 1, 1), double dOpacity = 1);
 		/// Create the volume mesh and add it to the scene to be rendered
 		/**
@@ -139,6 +140,7 @@ namespace TexGen
 
 		/// Render a dual yarn mesh with given color added by joe
 		vtkProp* RenderDualYarnMesh(CDualYarn &Yarn,int i, const CDomain *pDomain = NULL, COLOR Color = COLOR(1, 1, 1));
+		/// Used to render the outersection of a dual yarn
 		vtkProp* RenderDualYarnMeshOuter(CMesh &Mesh, const CDomain *pDomain = NULL, COLOR Color = COLOR(1, 1, 1));
 		/// Render the domain
 		void RenderDomain(string TextileName = "", COLOR Color = COLOR(1, 1, 1), double dOpacity = 0.5);

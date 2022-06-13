@@ -705,19 +705,19 @@ const CYarn *CTextile::GetYarn(int iIndex) const
 	}
 	return &m_Yarns[iIndex];
 }
-// added by joe
+
 vector<CDualYarn> &CTextile::GetDualYarns()
 {
 	BuildTextileIfNeeded();
 	return m_DualYarns;
 }
-// added by joe
+
 const vector<CDualYarn> &CTextile::GetDualYarns() const
 {
 	BuildTextileIfNeeded();
 	return m_DualYarns;
 }
-// added by joe
+
 CDualYarn *CTextile::GetDualYarn(int iIndex)
 {
 	BuildTextileIfNeeded();
@@ -728,7 +728,7 @@ CDualYarn *CTextile::GetDualYarn(int iIndex)
 	}
 	return &m_DualYarns[iIndex];
 }
-// added by joe
+
 const CDualYarn *CTextile::GetDualYarn(int iIndex) const
 {
 	BuildTextileIfNeeded();
@@ -745,7 +745,7 @@ int CTextile::GetNumYarns() const
 	BuildTextileIfNeeded();
 	return (int)m_Yarns.size();
 }
-// added by joe
+
 int CTextile::GetNumDualYarns() const
 {
 	BuildTextileIfNeeded();
