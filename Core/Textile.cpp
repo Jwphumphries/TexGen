@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Textile.h"
 #include "Domain.h"
 #include "TexGen.h"
+#include <unordered_set>
 
 using namespace TexGen;
 
@@ -1170,12 +1171,151 @@ bool CTextile::SetResolution(int Resolution)
 
 
 
+void CTextile::CombineYarns(vector<int> &YarnIndex)
+{
+
+	vector<CNode> CombinedNodes;
+	vector<CNode> UniqueCombinedNodes;
+	vector<CNode> TempNodes;
+	vector<CNode>::iterator itNode;
+	vector<CNode>::iterator itNode2;
+
+
+	CYarn Yarn;
+
+	//Yarn.AddNode(CNode(XYZ(0, 0, 0)));
+	//Yarn.AddNode(CNode(XYZ(10, 0, 0)));
+	//AddYarn(Yarn);
+
+
+
+	for (int i = 0; i < YarnIndex.size(); i++)
+	{
+		TempNodes = GetYarn(YarnIndex[i])->GetMasterNodes();
+		//TGLOG("Hello"<< TempNodes[1].GetPosition());
+
+		for (int j = 0; j < TempNodes.size(); j++)
+		{
+			CombinedNodes.push_back(TempNodes[j]);
+		}
+
+		TempNodes.clear();
+	}
+
+
+	//RemoveDuplicateNodes(CombinedNodes);
+
+	
+
+	for (int k = 0; k < CombinedNodes.size(); k++)
+	{
+		TGLOG("Node: " << k << "Position: " << CombinedNodes[k].GetPosition());
+		bool Unique = true;
+		for (int f = 0; f < CombinedNodes.size(); f++)
+		{
+			if (CombinedNodes[k].GetPosition() == CombinedNodes[f].GetPosition() && k!=f && k>f)
+			{
+				//TGLOG("True");
+				TGLOG("Problem Node: " << k);
+				Unique = false;
+			}
+			
+			
+		}
+
+		if (Unique)
+		{
+			UniqueCombinedNodes.push_back(CombinedNodes[k]);
+		}
+
+		
+	}
+	reverse(YarnIndex.begin(), YarnIndex.end());
+
+	for (int p=0; p < YarnIndex.size(); p++)
+	{
+		
+		DeleteYarn(YarnIndex[p]);
+	}
 
 
 
 
+	for (int w = 0; w < UniqueCombinedNodes.size(); w++)
+	{
+		TGLOG("Node: " << w << "Position: " << UniqueCombinedNodes[w].GetPosition());
+		Yarn.AddNode(UniqueCombinedNodes[w]);
+	}
+
+	AddYarn(Yarn);
 
 
+	
+	/*
+	for (itNode = CombinedNodes.begin(); itNode < CombinedNodes.end(); itNode++)
+	{
+		CNode Node = *itNode;
+		for (itNode2 = itNode +1; itNode2 < CombinedNodes.end(); itNode2++)
+		{
+			CNode Node2 = *itNode2
+			if (Node.GetPosition() == Node2.GetPosition())
+			{
+
+			}
+		}
+	}
+
+	*/
+	/*
+	int k = 0;
+	for (auto itNode = CombinedNodes.begin(); itNode!= CombinedNodes.end(); itNode++)
+	{
+		TGLOG("Node: " << k << "Position: " << CombinedNodes[k].GetPosition());
+		
+		for (auto itNode2 = CombinedNodes.begin(); itNode2 != CombinedNodes.end(); itNode2++)
+		{
+			if (itNode->GetPosition() == itNode2->GetPosition() && itNode != itNode2 )
+			{
+				TGLOG("True");
+				//TGLOG("Problem Node: " << );
+				CombinedNodes.erase(itNode2);
+			}
+		}
+
+		k++;
+	}
+	*/
+
+
+}
+
+
+/*
+void CTextile::RemoveDuplicateNodes(vector<CNode> &Nodes)
+{
+	auto end = Nodes.end();
+	for (auto it = Nodes.begin(); it != end; ++it) {
+		end = std::remove(it + 1, end, *it);
+	}
+
+	Nodes.erase(end, Nodes.end());
+}
+
+*/
+
+	
+	
+
+/*
+vector<XYZ>::const_iterator itPoint;
+std::vector<XY>::iterator itLoc;
+vector<POINT_INFO>::iterator itInfo;
+POINT_INFO Info;
+
+XYZ Min, Max;
+for (itPoint = Points.begin(); itPoint != Points.end(); ++itPoint)
+
+*/
 
 
 

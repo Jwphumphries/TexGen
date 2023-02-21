@@ -254,6 +254,12 @@ namespace TexGen
 		bool ConvertToInterpNodes() const;
 
 
+		///Combines severl yarns
+
+		void CombineYarns(vector<int> &YarnIndex);
+		//void RemoveDuplicateNodes(vector<CNode> &Nodes);
+
+
 		/// If this textile is a woven textile get a pointer of that type else return NULL
 		/**
 		Internally the function just returns dynamic_cast<CTextileWeave*>(this)
@@ -276,6 +282,9 @@ namespace TexGen
 		vector<CYarn> &GetYarns();
 		const CDomain* GetDomain() const {return m_pDomain;}
 		CDomain* GetDomain() {return m_pDomain;}
+
+
+
 
 	protected:
 		/// Build the textile only if needed
