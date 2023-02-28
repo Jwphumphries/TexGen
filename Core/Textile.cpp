@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TexGen.h"
 #include <unordered_set>
 
+
 using namespace TexGen;
 
 #define TOL 1e-10
@@ -134,6 +135,7 @@ int CTextile::AddYarn(const CYarn &Yarn)
 	}
 	return m_Yarns.size()-1;
 }
+
 
 int CTextile::AddYarn(const CYarn &Yarn) const
 {
@@ -1179,15 +1181,21 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 	vector<CNode> TempNodes;
 	vector<CNode>::iterator itNode;
 	vector<CNode>::iterator itNode2;
+	float tolerance = 0.001;
 
 
 	CYarn Yarn;
+	CObjectContainer<CYarnSection> Section;
+	const CYarnSection* pYarnSection;
 
 	//Yarn.AddNode(CNode(XYZ(0, 0, 0)));
 	//Yarn.AddNode(CNode(XYZ(10, 0, 0)));
 	//AddYarn(Yarn);
-
-
+	//Yarn.AssignSection(GetYarn(YarnIndex[0])->GetYarnSection());
+	pYarnSection = GetYarn(YarnIndex[0])->GetYarnSection();
+	Yarn.AssignSection(*pYarnSection);
+	const vector<XYZ> &Repeats = GetYarn(YarnIndex[0])->GetRepeats();
+	Yarn.SetRepeats(Repeats);
 
 	for (int i = 0; i < YarnIndex.size(); i++)
 	{
@@ -1203,9 +1211,17 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 	}
 
 
-	//RemoveDuplicateNodes(CombinedNodes);
+	// Added a tolerance and a check to see if nodes are close enough within the tolerance if they are theyre classed as a duplicate
 
-	
+	float posx1;
+	float posx2;
+	float posy1;
+	float posy2;
+	float posz1;
+	float posz2;
+	bool xCheck = false;
+	bool yCheck = false;
+	bool zCheck = false;
 
 	for (int k = 0; k < CombinedNodes.size(); k++)
 	{
@@ -1213,14 +1229,47 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 		bool Unique = true;
 		for (int f = 0; f < CombinedNodes.size(); f++)
 		{
-			if (CombinedNodes[k].GetPosition() == CombinedNodes[f].GetPosition() && k!=f && k>f)
+			posx1 = CombinedNodes[k].GetPosition().x;
+			posy1 = CombinedNodes[k].GetPosition().y;
+			posz1 = CombinedNodes[k].GetPosition().z;
+
+			posx2 = CombinedNodes[f].GetPosition().x;
+			posy2 = CombinedNodes[f].GetPosition().y;
+			posz2 = CombinedNodes[f].GetPosition().z;
+
+
+			if (posx1<(posx2 + tolerance) && posx1>(posx2 - tolerance))
+			{
+				xCheck = true;
+			}
+			else {
+				xCheck = false;
+			}
+
+			if (posy1<(posy2 + tolerance) && posy1>(posy2 - tolerance))
+			{
+				yCheck = true;
+			}
+			else {
+				yCheck = false;
+			}
+
+			if (posz1<(posz2 + tolerance) && posz1>(posz2 - tolerance))
+			{
+				zCheck = true;
+			}
+			else {
+				zCheck = false;
+			}
+
+			if (xCheck && yCheck && zCheck && k != f && k > f)
 			{
 				//TGLOG("True");
 				TGLOG("Problem Node: " << k);
 				Unique = false;
 			}
-			
-			
+
+
 		}
 
 		if (Unique)
@@ -1228,17 +1277,22 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 			UniqueCombinedNodes.push_back(CombinedNodes[k]);
 		}
 
-		
-	}
-	reverse(YarnIndex.begin(), YarnIndex.end());
 
-	for (int p=0; p < YarnIndex.size(); p++)
+	}
+
+	// Check for if yarn index is in ascending or decending order, needs to be in descending order for deleting yarns
+	if (YarnIndex[0] < YarnIndex[1])
 	{
-		
+		reverse(YarnIndex.begin(), YarnIndex.end());
+	}
+
+	for (int p = 0; p < YarnIndex.size(); p++)
+	{
+
 		DeleteYarn(YarnIndex[p]);
 	}
 
-
+	//AddYarn
 
 
 	for (int w = 0; w < UniqueCombinedNodes.size(); w++)
@@ -1249,8 +1303,8 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 
 	AddYarn(Yarn);
 
+	//BuildTextileIfNeeded();
 
-	
 	/*
 	for (itNode = CombinedNodes.begin(); itNode < CombinedNodes.end(); itNode++)
 	{
@@ -1271,7 +1325,7 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 	for (auto itNode = CombinedNodes.begin(); itNode!= CombinedNodes.end(); itNode++)
 	{
 		TGLOG("Node: " << k << "Position: " << CombinedNodes[k].GetPosition());
-		
+
 		for (auto itNode2 = CombinedNodes.begin(); itNode2 != CombinedNodes.end(); itNode2++)
 		{
 			if (itNode->GetPosition() == itNode2->GetPosition() && itNode != itNode2 )
@@ -1286,7 +1340,7 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 	}
 	*/
 
-
+	
 }
 
 

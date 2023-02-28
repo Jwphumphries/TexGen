@@ -58,6 +58,10 @@ namespace TexGen
 		void NestLayers();
 		void MaxNestLayers();
 
+		
+
+		
+
 	protected:
 		/// Applies a set of offsets to the yarns. This is an absolute value - if there is already
 		/// an offset in place this will be removed before the new offset is applied

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma once
 #include "Yarn.h"
+#include "YarnSection.h"
 #include "PropertiesTextile.h"
 namespace TexGen
 { 
@@ -30,6 +31,7 @@ namespace TexGen
 	class CTextileLayerToLayer;
 	class CTextileAngleInterlock;
 	class CTextileWeave2D;
+	class CYarnSection;
 
 	using namespace std;
 
@@ -253,10 +255,9 @@ namespace TexGen
 		/// Sets the section at each node to the original section
 		bool ConvertToInterpNodes() const;
 
-
 		///Combines severl yarns
-
 		void CombineYarns(vector<int> &YarnIndex);
+		
 		//void RemoveDuplicateNodes(vector<CNode> &Nodes);
 
 
@@ -329,5 +330,9 @@ namespace TexGen
 		mutable bool m_bNeedsBuilding;
 
 		CObjectContainer<CDomain> m_pDomain;
+
+		
+
+
 	};
 };	// namespace TexGen

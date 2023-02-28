@@ -81,7 +81,7 @@ void CTextileLayered::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE Ou
 
 void CTextileLayered::AddLayer(CTextile& Textile, XYZ& Offset)
 {
-	if ( Textile.GetType() == "CTextileLayered" )
+	if ( Textile.GetType() == "CTextileLayered"  )
 	{
 		const vector< vector<int> > YarnIndices = dynamic_cast<CTextileLayered*>(&Textile)->GetLayerYarnIndices();
 		vector<XY> Offsets = dynamic_cast<CTextileLayered*>(&Textile)->GetOffsets();
@@ -650,3 +650,7 @@ double CTextileLayered::GreatestCommonDenominator( double X1, double X2 )
 	}
 	return( (double)(iX1/1e+6) );
 }
+
+
+
+
