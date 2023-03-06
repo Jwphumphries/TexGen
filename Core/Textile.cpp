@@ -1182,18 +1182,17 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 	vector<CNode>::iterator itNode;
 	vector<CNode>::iterator itNode2;
 	float tolerance = 0.001;
-
+	int numSlaveNodes = 0;
 
 	CYarn Yarn;
 	CObjectContainer<CYarnSection> Section;
 	const CYarnSection* pYarnSection;
 
-	//Yarn.AddNode(CNode(XYZ(0, 0, 0)));
-	//Yarn.AddNode(CNode(XYZ(10, 0, 0)));
-	//AddYarn(Yarn);
-	//Yarn.AssignSection(GetYarn(YarnIndex[0])->GetYarnSection());
+	// Assign section, interpolation, resolution and repeats
 	pYarnSection = GetYarn(YarnIndex[0])->GetYarnSection();
 	Yarn.AssignSection(*pYarnSection);
+	Yarn.AssignInterpolation(CInterpolationBezier());
+	
 	const vector<XYZ> &Repeats = GetYarn(YarnIndex[0])->GetRepeats();
 	Yarn.SetRepeats(Repeats);
 
@@ -1208,6 +1207,8 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 		}
 
 		TempNodes.clear();
+
+		numSlaveNodes = GetYarn(YarnIndex[i])->GetNumSlaveNodes() + numSlaveNodes;
 	}
 
 
@@ -1301,6 +1302,9 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 		Yarn.AddNode(UniqueCombinedNodes[w]);
 	}
 
+
+
+	Yarn.SetResolution(numSlaveNodes, 40);
 	AddYarn(Yarn);
 
 	//BuildTextileIfNeeded();
