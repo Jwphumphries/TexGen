@@ -1181,7 +1181,7 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 	vector<CNode> TempNodes;
 	vector<CNode>::iterator itNode;
 	vector<CNode>::iterator itNode2;
-	float tolerance = 0.001;
+	float tolerance = 0.1;
 	int numSlaveNodes = 0;
 
 	CYarn Yarn;
@@ -1220,6 +1220,13 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 	float posy2;
 	float posz1;
 	float posz2;
+	float posx3;
+	float posx4;
+	float posy3;
+	float posy4;
+	float posz3;
+	float posz4;
+
 	bool xCheck = false;
 	bool yCheck = false;
 	bool zCheck = false;
@@ -1277,6 +1284,105 @@ void CTextile::CombineYarns(vector<int> &YarnIndex)
 		{
 			UniqueCombinedNodes.push_back(CombinedNodes[k]);
 		}
+
+
+	}
+
+
+
+
+
+
+	// check for if nodes are out of position causing overlap
+	float angle2;
+	float angle3;
+	float angle4;
+
+	bool intersectionFlag = false;
+	float m1;
+	float c1;
+	float m2;
+	float c2;
+	float lowerBoundx;
+	float upperBoundx;
+	float lowerBoundy;
+	float upperBoundy;
+
+	XYZ tempPos;
+	XY intersection;
+
+	
+
+
+
+	for (int i = 0; i < UniqueCombinedNodes.size()-3; i++) {
+
+
+		posx1 = CombinedNodes[i].GetPosition().x;
+		posy1 = CombinedNodes[i].GetPosition().y;
+		posz1 = CombinedNodes[i].GetPosition().z;
+
+		posx2 = CombinedNodes[i+1].GetPosition().x;
+		posy2 = CombinedNodes[i + 1].GetPosition().y;
+		posz2 = CombinedNodes[i + 1].GetPosition().z;
+
+		posx3 = CombinedNodes[i + 2].GetPosition().x;
+		posy3 = CombinedNodes[i + 2].GetPosition().y;
+		posz3 = CombinedNodes[i + 2].GetPosition().z;
+
+		posx4 = CombinedNodes[i + 3].GetPosition().x;
+		posy4 = CombinedNodes[i + 3].GetPosition().y;
+		posz4 = CombinedNodes[i + 3].GetPosition().z;
+
+		//intersectionFlag = LineLineIntersect2D(XY(posx1, posz1), XY(posx2, posz2), XY(posx3, posz3), XY(posx4, posz4),U1,U2);
+
+
+		// check to see if the line segments of pos1->pos2 and pos3->pos4 intersect
+
+		// intersection of the lines defined by pos1->pos2 and pos3->pos4
+		//gradient and y intercepts of the lines
+		
+		m1 = (posz2 - posz1) / (posx2 - posx1);
+		m2 = (posz4 - posz3) / (posx4 - posx3);
+		c1 = posz1 - m1 * posx1;
+		c2 = posz3 - m2 * posx3;
+
+		if (m1 != m2) {
+			intersection.x = (c2 - c1) / (m1 - m2);
+			intersection.y = m1 * intersection.x + c1;
+
+
+
+
+		
+
+
+
+		}
+		
+
+		intersectionFlag = LineSegmentsIntersect2D(XY(posx1, posz1), XY(posx2, posz2), XY(posx3, posz3), XY(posx4, posz4));
+
+
+		if (intersectionFlag) {
+
+			if (CombinedNodes[i + 1].GetPosition() != CombinedNodes[i + 2].GetPosition()) {
+				TGLOG("Intersection!!!");
+			}
+			tempPos = CombinedNodes[i + 1].GetPosition();
+			CombinedNodes[i + 1].SetPosition(CombinedNodes[i + 2].GetPosition());
+			CombinedNodes[i + 2].SetPosition(tempPos);
+
+			
+
+			intersectionFlag = false;
+
+
+
+		}
+		
+
+
 
 
 	}
