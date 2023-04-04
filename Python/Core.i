@@ -138,6 +138,7 @@ namespace std
 %include "../Core/TextileOrthogonal.h"
 %include "../Core/TextileAngleInterlock.h"
 %include "../Core/TextileLayerToLayer.h"
+%include "../Core/TextileDecoupledLToL.h"
 %include "../Core/TextileOffsetAngleInterlock.h"
 %include "../Core/ShearedTextileWeave2D.h"
 %include "../Core/TextileLayered.h"
@@ -186,6 +187,7 @@ namespace std
 %include "../Core/FibreDistributionConst.h"
 %include "../Core/FibreDistribution1DQuad.h"
 
+%include "../Core/MeshDomainPlane.h"
 %include "../Core/VoxelMesh.h"
 %include "../Core/RectangularVoxelMesh.h"
 %include "../Core/ShearedVoxelMesh.h"
@@ -200,6 +202,7 @@ namespace std
 %include "../Core/OctreeVoxelMesh.h"
 %include "../Core/ShellElementExport.h"
 %include "../Core/SurfaceMesh.h"
+
 
 %include "../Core/PatternDraft.h"
 

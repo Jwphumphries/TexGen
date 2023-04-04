@@ -29,6 +29,7 @@ namespace TexGen
 	class CTextileLayered;
 	class CTextileOrthogonal;
 	class CTextileLayerToLayer;
+	class CTextileDecoupledLToL;
 	class CTextileAngleInterlock;
 	class CTextileWeave2D;
 	class CYarnSection;
@@ -91,7 +92,15 @@ namespace TexGen
 		*/
 		bool AddSurfaceToMesh(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bTrimToDomain = false);
 
+		/// Create volume mesh for each yarn in this textile and add to a vector of meshes
+		/**
+		\param YarnMeshes Vector of meshes, one for each yarn, to add elements to
+		\param bTrimToDomain Mesh inserted will be clipped to the domain size
+		*/
+		void AddVolumeToMesh(vector<CMesh> &YarnMeshes, bool bTrimToDomain = false);
+
 		/// Create volume mesh for this textile and add it to the mesh object
+		
 		/**
 		\param Mesh Mesh to add elements to
 		\param bTrimToDomain Mesh inserted will be clipped to the domain size
@@ -108,7 +117,7 @@ namespace TexGen
 /*		/// Create Mesh and output to abaqus file format
 		bool OutputAbaqus(string FileName, double dInitialStrains = 0);*/
 
-		/// Get usefull information of a list of points
+		/// Get useful information of a list of points
 		/**
 		Pass in a vector of point coordinates, for each point it will be determined if
 		it lies within a yarn. If it does then the yarn index along with the tangent of the
@@ -273,6 +282,7 @@ namespace TexGen
 		CTextileOrthogonal* GetOrthogonalWeave();
 		CTextileLayered* GetLayeredTextile();
 		CTextileLayerToLayer* GetLayerToLayerWeave();
+		CTextileDecoupledLToL * GetDecoupledLToLWeave();
 		CTextileAngleInterlock* GetAngleInterlockWeave();
 
 		// Accessor methods

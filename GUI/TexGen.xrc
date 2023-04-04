@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-<resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
+<resource xmlns="http://www.wxwidgets.org/wxxrc" version="2.5.3.0">
 	<object class="wxDialog" name="TetgenOptions">
 		<style>wxDEFAULT_DIALOG_STYLE</style>
 		<title>Tetgen Options</title>
@@ -162,7 +162,7 @@
 						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
 						<border>5</border>
 						<object class="wxTextCtrl" name="XVoxelCount">
-							<tooltip>Number of voxels along x axis</tooltip>
+							<tooltip>Number of voxels along x axis\nOctree refinement will split each element into up to 2^N smaller elements. This can increase the meshing time significantly. (N is refinement level selected in following dialog)</tooltip>
 							<value></value>
 							<maxlength>0</maxlength>
 						</object>
@@ -181,7 +181,7 @@
 						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
 						<border>5</border>
 						<object class="wxTextCtrl" name="YVoxelCount">
-							<tooltip>Number of voxels along y axis</tooltip>
+							<tooltip>Number of voxels along y axis\nOctree refinement will split each element into up to 2^N smaller elements. This can increase the meshing time significantly. (N is refinement level selected in following dialog)</tooltip>
 							<value></value>
 							<maxlength>0</maxlength>
 						</object>
@@ -200,7 +200,7 @@
 						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
 						<border>5</border>
 						<object class="wxTextCtrl" name="ZVoxelCount">
-							<tooltip>Number of voxels along z axis</tooltip>
+							<tooltip>Number of voxels along z axis\nOctree refinement will split each element into up to 2^N smaller elements. This can increase the meshing time significantly. (N is refinement level selected in following dialog)</tooltip>
 							<value></value>
 							<maxlength>0</maxlength>
 						</object>
@@ -224,6 +224,22 @@
 							<label>Output Matrix</label>
 							<checked>1</checked>
 						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxCheckBox" name="OctreeRefinement">
+							<tooltip>Use octree refinement and smoothing</tooltip>
+							<label>Octree Refinement</label>
+							<checked>1</checked>
+						</object>
+					</object>
+					<object class="spacer">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<size>0,0</size>
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
@@ -320,7 +336,7 @@
 	</object>
 	<object class="wxDialog" name="OctreeOptions">
 		<style>wxDEFAULT_DIALOG_STYLE</style>
-		<size>363,628</size>
+		<size>363,454</size>
 		<title>Octree Refinement Options</title>
 		<centered>1</centered>
 		<object class="wxBoxSizer">
@@ -340,75 +356,9 @@
 						<option>0</option>
 						<flag>wxALL</flag>
 						<border>5</border>
-						<object class="wxStaticText" name="m_staticText85">
-							<label>X Voxel Count</label>
-							<wrap>-1</wrap>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxTextCtrl" name="XVoxelCount">
-							<tooltip>Number of voxels along x axis</tooltip>
-							<value></value>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxStaticText" name="m_staticText86">
-							<label>Y Voxel Count</label>
-							<wrap>-1</wrap>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxTextCtrl" name="YVoxelCount">
-							<tooltip>Number of voxels along y axis</tooltip>
-							<value></value>
-							<maxlength>0</maxlength>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxStaticText" name="m_staticText87">
-							<label>Z Voxel Count</label>
-							<wrap>-1</wrap>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxTextCtrl" name="ZVoxelCount">
-							<tooltip>Number of voxels along z axis</tooltip>
-							<value></value>
-							<maxlength>0</maxlength>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
 						<object class="wxCheckBox" name="Surfaces">
 							<tooltip>Create Abaqus &apos;NSet&apos; ans &apos;Surface&apos; for each of yarn-matrix surfaces. Creates a pair of surfaces - one for yarn and one for matrix</tooltip>
-							<label>Output surfaces</label>
-							<checked>0</checked>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxCheckBox" name="Cohesive">
-							<tooltip>Create cohesive contact between created yarn and matrix surfaces</tooltip>
-							<label>Output cohesive elements</label>
+							<label>Output surfaces for cohesive contacts</label>
 							<checked>0</checked>
 						</object>
 					</object>
@@ -425,46 +375,6 @@
 					<hgap>0</hgap>
 					<growablecols></growablecols>
 					<growablerows></growablerows>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxStaticText" name="m_staticText77">
-							<font>
-								<style>normal</style>
-								<weight>bold</weight>
-								<underlined>0</underlined>
-							</font>
-							<label>Refinement Options</label>
-							<wrap>-1</wrap>
-						</object>
-					</object>
-					<object class="spacer">
-						<option>1</option>
-						<flag>wxEXPAND</flag>
-						<border>5</border>
-						<size>0,0</size>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxStaticText" name="m_staticText79">
-							<label>Minimum level</label>
-							<wrap>-1</wrap>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxSpinCtrl" name="MinLevel">
-							<style>wxSP_ARROW_KEYS</style>
-							<value>1</value>
-							<min>1</min>
-							<max>10</max>
-						</object>
-					</object>
 					<object class="sizeritem">
 						<option>0</option>
 						<flag>wxALL</flag>
@@ -506,7 +416,7 @@
 						<object class="wxStaticText" name="m_staticText78">
 							<font>
 								<style>normal</style>
-								<weight>bold</weight>
+								<weight>normal</weight>
 								<underlined>0</underlined>
 							</font>
 							<label>Smoothing Options</label>
@@ -706,11 +616,12 @@
 							<style>wxRA_SPECIFY_COLS</style>
 							<tooltip>This controls the domain to be used in the export.\nBox  - for a rectangular domain \nSheared  - sheared in the xy direction only\nRotated - applies where a rotated textile has been created with a corresponding rotated domain\n</tooltip>
 							<label>Domain Type</label>
-							<selection>2</selection>
+							<selection>0</selection>
 							<content>
 								<item>Box Domain</item>
 								<item>Sheared Domain</item>
 								<item>Rotated Domain</item>
+								<item>Prism Domain</item>
 							</content>
 							<dimension>1</dimension>
 						</object>
@@ -910,6 +821,7 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>OK</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -921,6 +833,7 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -1015,6 +928,7 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>OK</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -1026,6 +940,7 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -1099,6 +1014,7 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>OK</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -1110,6 +1026,7 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -2034,6 +1951,7 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>OK</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -2045,6 +1963,7 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -2149,6 +2068,7 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>OK</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -2160,6 +2080,7 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -2193,6 +2114,7 @@
 									<object class="wxButton" name="ConstantSection">
 										<label>Edit Section</label>
 										<default>0</default>
+										<auth_needed>0</auth_needed>
 										<markup>0</markup>
 										<bitmap />
 									</object>
@@ -2230,6 +2152,7 @@
 												<hidden>1</hidden>
 												<label>Insert Section</label>
 												<default>0</default>
+												<auth_needed>0</auth_needed>
 												<markup>0</markup>
 												<bitmap />
 											</object>
@@ -2242,6 +2165,7 @@
 												<hidden>1</hidden>
 												<label>Remove Section</label>
 												<default>0</default>
+												<auth_needed>0</auth_needed>
 												<markup>0</markup>
 												<bitmap />
 											</object>
@@ -2253,6 +2177,7 @@
 											<object class="wxButton" name="InterpNodesSection">
 												<label>Edit Section</label>
 												<default>0</default>
+												<auth_needed>0</auth_needed>
 												<markup>0</markup>
 												<bitmap />
 											</object>
@@ -2327,6 +2252,7 @@
 													<object class="wxButton" name="InterpPositionInsert">
 														<label>Insert Section</label>
 														<default>0</default>
+														<auth_needed>0</auth_needed>
 														<markup>0</markup>
 														<bitmap />
 													</object>
@@ -2338,6 +2264,7 @@
 													<object class="wxButton" name="InterpPositionRemove">
 														<label>Remove Section</label>
 														<default>0</default>
+														<auth_needed>0</auth_needed>
 														<markup>0</markup>
 														<bitmap />
 													</object>
@@ -2349,6 +2276,7 @@
 													<object class="wxButton" name="InterpPositionSection">
 														<label>Edit Section</label>
 														<default>0</default>
+														<auth_needed>0</auth_needed>
 														<markup>0</markup>
 														<bitmap />
 													</object>
@@ -2443,6 +2371,7 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>Ok</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -2454,6 +2383,7 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -2655,6 +2585,7 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>Ok</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -2666,6 +2597,7 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -2714,6 +2646,7 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>Ok</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -2725,6 +2658,7 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -2768,6 +2702,7 @@
 				<object class="wxButton" name="InsertNode">
 					<label>Insert Node</label>
 					<default>0</default>
+					<auth_needed>0</auth_needed>
 					<markup>0</markup>
 					<bitmap />
 				</object>
@@ -2779,6 +2714,7 @@
 				<object class="wxButton" name="DuplicateYarn">
 					<label>Duplicate Yarn</label>
 					<default>0</default>
+					<auth_needed>0</auth_needed>
 					<markup>0</markup>
 					<bitmap />
 				</object>
@@ -2790,6 +2726,7 @@
 				<object class="wxButton" name="DeleteSelected">
 					<label>Delete Selected</label>
 					<default>0</default>
+					<auth_needed>0</auth_needed>
 					<markup>0</markup>
 					<bitmap />
 				</object>
@@ -2831,8 +2768,8 @@
 		</object>
 	</object>
 	<object class="wxDialog" name="Properties">
-		<style>wxDEFAULT_DIALOG_STYLE</style>
-		<size>413,250</size>
+		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<size>503,381</size>
 		<title>Properties</title>
 		<object class="wxBoxSizer">
 			<orient>wxVERTICAL</orient>
@@ -3150,6 +3087,7 @@
 									<tooltip>Selection from Textiles list will be added to Layers list</tooltip>
 									<label>Add Layer</label>
 									<default>0</default>
+									<auth_needed>0</auth_needed>
 									<markup>0</markup>
 									<bitmap />
 								</object>
@@ -3162,6 +3100,7 @@
 									<tooltip>Removes selected item in Layers list</tooltip>
 									<label>Remove Layer</label>
 									<default>0</default>
+									<auth_needed>0</auth_needed>
 									<markup>0</markup>
 									<bitmap />
 								</object>
@@ -3173,6 +3112,7 @@
 								<object class="wxButton" name="MoveLayerUpButton">
 									<label>Move Layer Up</label>
 									<default>0</default>
+									<auth_needed>0</auth_needed>
 									<markup>0</markup>
 									<bitmap />
 								</object>
@@ -3184,6 +3124,7 @@
 								<object class="wxButton" name="MoveLayerDownButton">
 									<label>Move Layer Down</label>
 									<default>0</default>
+									<auth_needed>0</auth_needed>
 									<markup>0</markup>
 									<bitmap />
 								</object>
@@ -3214,6 +3155,7 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>Ok</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -3225,6 +3167,7 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -3396,6 +3339,7 @@
 						<object class="wxButton" name="wxID_PRINT">
 							<label>Print</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -3407,6 +3351,7 @@
 						<object class="wxButton" name="wxID_SAVE">
 							<label>Save</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -3456,6 +3401,7 @@
 								<object class="wxButton" name="NextTime">
 									<label>Next time</label>
 									<default>0</default>
+									<auth_needed>0</auth_needed>
 									<markup>0</markup>
 									<bitmap />
 								</object>
@@ -3484,6 +3430,7 @@
 								<object class="wxButton" name="NotAgain">
 									<label>Don&apos;t ask me again</label>
 									<default>0</default>
+									<auth_needed>0</auth_needed>
 									<markup>0</markup>
 									<bitmap />
 								</object>
@@ -3529,6 +3476,7 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>OK</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>
@@ -3540,6 +3488,7 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<auth_needed>0</auth_needed>
 							<markup>0</markup>
 							<bitmap />
 						</object>

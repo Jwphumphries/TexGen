@@ -28,12 +28,19 @@ namespace TexGen
 
 	/// Domain implementation described using extrusion of a polygon outline
 	/**
-	
+	Prism is described by a yarn with two nodes (to give the orientation )
+	and a cross-section defined by a polygon section created using the vector of points given as an input parameter
 	*/
 
 	class CLASS_DECLSPEC CDomainPrism : public CDomain
 	{
 	public:
+		/// Constructor
+		/**
+		\param Points Vector of points defining the cross-section of the prism
+		\param start Position of start node 
+		\return end Position of end node
+		*/
 		CDomainPrism(const vector<XY> &Points, XYZ &start, XYZ &end);
 		CDomainPrism(TiXmlElement &Element);
 		~CDomainPrism(void);
@@ -47,10 +54,17 @@ namespace TexGen
 		vector<pair<int, int> > GetRepeatLimits(const CYarn &Yarn) const { return vector<pair<int, int> >(); }
 		/// Get the translation vectors necessary to fully fill the domain
 		vector<XYZ> GetTranslations(const CYarn &Yarn) const { return vector<XYZ>(); }
+
+		/// Clips a mesh passed to the function to the domain by using the PointInsideYarn function (for the domain 'yarn')
+		/// Creates intersection mesh of intersecting elements for further testing against each domain plane
 		void ClipMeshToDomain(CMesh &Mesh, bool bFillGaps = true) const;
+
+		/// Clip mesh elements which are known to intersect with the domain
+		/// Checks each mesh element against each domain plane
 		void ClipIntersectMeshToDomain(CMesh &Mesh, bool bFillGaps = true) const;
 
-		bool ClipMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps = true) const { return false; }
+		bool ClipMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps = true) const; //{ return false; }
+		bool ClipIntersectMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps) const;
 		string GetType() const { return "CDomainPrism"; }
 
 		const vector<XY> &GetPoints() const { return m_Points; }
@@ -69,6 +83,7 @@ namespace TexGen
 
 		/// Generate a set of planes corresponding to the mesh elements
 		void GeneratePlanes();
+		void GetMeshWithPolygonEnd(CMesh &Mesh);
 
 		void GetPolygonLimits(XYZ &StartPoint, XYZ *SizeVecs);
 
@@ -94,9 +109,11 @@ namespace TexGen
 		/// Populate m_PlaneIntersections and m_Mesh, note this only works for closed domains
 		void BuildMesh();
 
-		
+		/// Generate a plane from a vector of co-planar points
 		bool GetPlane(XYZ *points, PLANE &plane);
+		/// Iterate through m_ElementPlanes to remove duplicates
 		void RemoveDuplicatePlanes();
+		/// Test if both normal and d of two PLANE structures are equal 
 		bool PlaneEqual(PLANE Plane1, PLANE Plane2);
 
 		/// Given a mesh and a plane, the holes found in the plane will be filled with triangles

@@ -59,6 +59,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TextileOrthogonal.h"
 #include "TextileAngleInterlock.h"
 #include "TextileLayerToLayer.h"
+#include "TextileDecoupledLToL.h"
 #include "TextileOffsetAngleInterlock.h"
 #include "ShearedPeriodicBoundaries.h"
 #include "StaggeredPeriodicBoundaries.h"
@@ -69,6 +70,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AdjustMeshInterference.h"
 #include "Materials.h"
 #include "ShellElementExport.h"
+#include "MeshDomainPlane.h"
 
 /// Helper macro to get the texgen instance
 #define TEXGEN (CTexGen::GetInstance())
