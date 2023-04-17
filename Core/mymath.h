@@ -810,6 +810,18 @@ namespace TexGen
 		return true;
 	}
 
+	// determines if 3 points are counterclockwise
+	inline bool PointsCounterclockwise(XY A, XY B, XY C) {
+		return (C.y - A.y)*(B.x - A.x) > (B.y - A.y)*(C.x - A.x);
+	}
+
+	/// https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/
+	// determines if 2 line segments AB and CD intersect or not
+	inline bool LineSegmentsIntersect2D(XY A, XY B, XY C, XY D) {
+		return PointsCounterclockwise(A, C, D) != PointsCounterclockwise(B, C, D) && PointsCounterclockwise(A, B, C) != PointsCounterclockwise(A, B, D);
+
+	}
+
 	/// http://astronomy.swin.edu.au/~pbourke/geometry/lineline3d/
 	/// Find the shortest distance between two lines given two points on each line p1, p2 and p3, p4. dU1 is the fraction along the length
 	/// of the first line which is closest to the second line, similarly dU2 is the fraction along the length of the second line closest to the first line.

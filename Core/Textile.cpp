@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Textile.h"
 #include "Domain.h"
 #include "TexGen.h"
+#include <unordered_set>
+
 
 using namespace TexGen;
 
@@ -133,6 +135,7 @@ int CTextile::AddYarn(const CYarn &Yarn)
 	}
 	return m_Yarns.size()-1;
 }
+
 
 int CTextile::AddYarn(const CYarn &Yarn) const
 {
@@ -1170,12 +1173,313 @@ bool CTextile::SetResolution(int Resolution)
 
 
 
+void CTextile::CombineYarns(vector<int> &YarnIndex)
+{
+
+	vector<CNode> CombinedNodes;
+	vector<CNode> UniqueCombinedNodes;
+	vector<CNode> TempNodes;
+	vector<CNode>::iterator itNode;
+	vector<CNode>::iterator itNode2;
+	float tolerance = 0.1;
+	int numSlaveNodes = 0;
+
+	CYarn Yarn;
+	CObjectContainer<CYarnSection> Section;
+	const CYarnSection* pYarnSection;
+
+	// Assign section, interpolation, resolution and repeats
+	pYarnSection = GetYarn(YarnIndex[0])->GetYarnSection();
+	Yarn.AssignSection(*pYarnSection);
+	Yarn.AssignInterpolation(CInterpolationBezier());
+	
+	const vector<XYZ> &Repeats = GetYarn(YarnIndex[0])->GetRepeats();
+	Yarn.SetRepeats(Repeats);
+
+	for (int i = 0; i < YarnIndex.size(); i++)
+	{
+		TempNodes = GetYarn(YarnIndex[i])->GetMasterNodes();
+		//TGLOG("Hello"<< TempNodes[1].GetPosition());
+
+		for (int j = 0; j < TempNodes.size(); j++)
+		{
+			CombinedNodes.push_back(TempNodes[j]);
+		}
+
+		TempNodes.clear();
+
+		numSlaveNodes = GetYarn(YarnIndex[i])->GetNumSlaveNodes() + numSlaveNodes;
+	}
+
+
+	// Added a tolerance and a check to see if nodes are close enough within the tolerance if they are theyre classed as a duplicate
+
+	float posx1;
+	float posx2;
+	float posy1;
+	float posy2;
+	float posz1;
+	float posz2;
+	float posx3;
+	float posx4;
+	float posy3;
+	float posy4;
+	float posz3;
+	float posz4;
+
+	bool xCheck = false;
+	bool yCheck = false;
+	bool zCheck = false;
+
+	for (int k = 0; k < CombinedNodes.size(); k++)
+	{
+		TGLOG("Node: " << k << "Position: " << CombinedNodes[k].GetPosition());
+		bool Unique = true;
+		for (int f = 0; f < CombinedNodes.size(); f++)
+		{
+			posx1 = CombinedNodes[k].GetPosition().x;
+			posy1 = CombinedNodes[k].GetPosition().y;
+			posz1 = CombinedNodes[k].GetPosition().z;
+
+			posx2 = CombinedNodes[f].GetPosition().x;
+			posy2 = CombinedNodes[f].GetPosition().y;
+			posz2 = CombinedNodes[f].GetPosition().z;
+
+
+			if (posx1<(posx2 + tolerance) && posx1>(posx2 - tolerance))
+			{
+				xCheck = true;
+			}
+			else {
+				xCheck = false;
+			}
+
+			if (posy1<(posy2 + tolerance) && posy1>(posy2 - tolerance))
+			{
+				yCheck = true;
+			}
+			else {
+				yCheck = false;
+			}
+
+			if (posz1<(posz2 + tolerance) && posz1>(posz2 - tolerance))
+			{
+				zCheck = true;
+			}
+			else {
+				zCheck = false;
+			}
+
+			if (xCheck && yCheck && zCheck && k != f && k > f)
+			{
+				//TGLOG("True");
+				TGLOG("Problem Node: " << k);
+				Unique = false;
+			}
+
+
+		}
+
+		if (Unique)
+		{
+			UniqueCombinedNodes.push_back(CombinedNodes[k]);
+		}
+
+
+	}
 
 
 
 
 
 
+	// check for if nodes are out of position causing overlap
+	float angle2;
+	float angle3;
+	float angle4;
+
+	bool intersectionFlag = false;
+	float m1;
+	float c1;
+	float m2;
+	float c2;
+	float lowerBoundx;
+	float upperBoundx;
+	float lowerBoundy;
+	float upperBoundy;
+
+	XYZ tempPos;
+	XY intersection;
+
+	
+
+
+
+	for (int i = 0; i < UniqueCombinedNodes.size()-3; i++) {
+
+
+		posx1 = CombinedNodes[i].GetPosition().x;
+		posy1 = CombinedNodes[i].GetPosition().y;
+		posz1 = CombinedNodes[i].GetPosition().z;
+
+		posx2 = CombinedNodes[i+1].GetPosition().x;
+		posy2 = CombinedNodes[i + 1].GetPosition().y;
+		posz2 = CombinedNodes[i + 1].GetPosition().z;
+
+		posx3 = CombinedNodes[i + 2].GetPosition().x;
+		posy3 = CombinedNodes[i + 2].GetPosition().y;
+		posz3 = CombinedNodes[i + 2].GetPosition().z;
+
+		posx4 = CombinedNodes[i + 3].GetPosition().x;
+		posy4 = CombinedNodes[i + 3].GetPosition().y;
+		posz4 = CombinedNodes[i + 3].GetPosition().z;
+
+		//intersectionFlag = LineLineIntersect2D(XY(posx1, posz1), XY(posx2, posz2), XY(posx3, posz3), XY(posx4, posz4),U1,U2);
+
+
+		// check to see if the line segments of pos1->pos2 and pos3->pos4 intersect
+
+		// intersection of the lines defined by pos1->pos2 and pos3->pos4
+		//gradient and y intercepts of the lines
+		
+		m1 = (posz2 - posz1) / (posx2 - posx1);
+		m2 = (posz4 - posz3) / (posx4 - posx3);
+		c1 = posz1 - m1 * posx1;
+		c2 = posz3 - m2 * posx3;
+
+		if (m1 != m2) {
+			intersection.x = (c2 - c1) / (m1 - m2);
+			intersection.y = m1 * intersection.x + c1;
+
+
+
+
+		
+
+
+
+		}
+		
+
+		intersectionFlag = LineSegmentsIntersect2D(XY(posx1, posz1), XY(posx2, posz2), XY(posx3, posz3), XY(posx4, posz4));
+
+
+		if (intersectionFlag) {
+
+			if (CombinedNodes[i + 1].GetPosition() != CombinedNodes[i + 2].GetPosition()) {
+				TGLOG("Intersection!!!");
+			}
+			tempPos = CombinedNodes[i + 1].GetPosition();
+			CombinedNodes[i + 1].SetPosition(CombinedNodes[i + 2].GetPosition());
+			CombinedNodes[i + 2].SetPosition(tempPos);
+
+			
+
+			intersectionFlag = false;
+
+
+
+		}
+		
+
+
+
+
+	}
+
+	// Check for if yarn index is in ascending or decending order, needs to be in descending order for deleting yarns
+	if (YarnIndex[0] < YarnIndex[1])
+	{
+		reverse(YarnIndex.begin(), YarnIndex.end());
+	}
+
+	for (int p = 0; p < YarnIndex.size(); p++)
+	{
+
+		DeleteYarn(YarnIndex[p]);
+	}
+
+	//AddYarn
+
+
+	for (int w = 0; w < UniqueCombinedNodes.size(); w++)
+	{
+		TGLOG("Node: " << w << "Position: " << UniqueCombinedNodes[w].GetPosition());
+		Yarn.AddNode(UniqueCombinedNodes[w]);
+	}
+
+
+
+	Yarn.SetResolution(numSlaveNodes, 40);
+	AddYarn(Yarn);
+
+	//BuildTextileIfNeeded();
+
+	/*
+	for (itNode = CombinedNodes.begin(); itNode < CombinedNodes.end(); itNode++)
+	{
+		CNode Node = *itNode;
+		for (itNode2 = itNode +1; itNode2 < CombinedNodes.end(); itNode2++)
+		{
+			CNode Node2 = *itNode2
+			if (Node.GetPosition() == Node2.GetPosition())
+			{
+
+			}
+		}
+	}
+
+	*/
+	/*
+	int k = 0;
+	for (auto itNode = CombinedNodes.begin(); itNode!= CombinedNodes.end(); itNode++)
+	{
+		TGLOG("Node: " << k << "Position: " << CombinedNodes[k].GetPosition());
+
+		for (auto itNode2 = CombinedNodes.begin(); itNode2 != CombinedNodes.end(); itNode2++)
+		{
+			if (itNode->GetPosition() == itNode2->GetPosition() && itNode != itNode2 )
+			{
+				TGLOG("True");
+				//TGLOG("Problem Node: " << );
+				CombinedNodes.erase(itNode2);
+			}
+		}
+
+		k++;
+	}
+	*/
+
+	
+}
+
+
+/*
+void CTextile::RemoveDuplicateNodes(vector<CNode> &Nodes)
+{
+	auto end = Nodes.end();
+	for (auto it = Nodes.begin(); it != end; ++it) {
+		end = std::remove(it + 1, end, *it);
+	}
+
+	Nodes.erase(end, Nodes.end());
+}
+
+*/
+
+	
+	
+
+/*
+vector<XYZ>::const_iterator itPoint;
+std::vector<XY>::iterator itLoc;
+vector<POINT_INFO>::iterator itInfo;
+POINT_INFO Info;
+
+XYZ Min, Max;
+for (itPoint = Points.begin(); itPoint != Points.end(); ++itPoint)
+
+*/
 
 
 

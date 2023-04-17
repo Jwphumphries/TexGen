@@ -442,7 +442,7 @@ namespace TexGen
 		/// Converts a yarn with constant cross-section to interpolate sections between nodes
 		/// Sets the section at each node to the original section
 		bool ConvertToInterpNodes();
-
+		
 		// Accessor methods
 		const vector<CNode> &GetMasterNodes() const { return m_MasterNodes; }
 		const vector<XYZ> &GetRepeats() const { return m_Repeats; }
