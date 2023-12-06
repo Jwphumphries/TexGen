@@ -307,21 +307,45 @@ void CVoxelMesh::SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputM
 	Output << "************" << "\n";
 	Output << "*Node" << "\n";
 	//PROFILE_BEGIN(OutputNodes);
+	if (iElementType == 0 || iElementType == 1)
+	{
 		OutputNodes(Output, Textile);
+	}
+	else if (iElementType == 2 || iElementType == 3)
+	{
+		OutputNodesQuad(Output, Textile);
+	}
 	//PROFILE_END();
 	TGLOG("Outputting hex elements");
 	//Output the voxel HEX elements
 	int iNumHexElements = 0;
-	if ( !iElementType )
+	if (!iElementType)
 	{
 		Output << "*Element, Type=C3D8R" << "\n";
 	}
-	else
+	else if (iElementType == 1)
 	{
 		Output << "*Element, Type=C3D8" << "\n";
 	}
+	else if (iElementType == 2)
+	{
+		Output << "*Element, Type=C3D20R" << "\n";
+	}
+	else if (iElementType == 3)
+	{
+		Output << "*Element, Type=C3D20" << "\n";
+	}
 	//PROFILE_BEGIN(OutputHexElements);
-	iNumHexElements = OutputHexElements( Output, bOutputMatrix, bOutputYarn );
+	
+
+	if (iElementType == 0 || iElementType == 1)
+	{
+		iNumHexElements = OutputHexElements(Output, bOutputMatrix, bOutputYarn);
+	}
+	else if (iElementType == 2 || iElementType == 3)
+	{
+		iNumHexElements = OutputHexElementsQuad(Output, bOutputMatrix, bOutputYarn);
+	}
 	//PROFILE_END();
 	bool bMatrixOnly = false;
 	if ( bOutputMatrix && !bOutputYarn )
@@ -465,6 +489,96 @@ int CVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOut
 		m_ElementsInfo = NewElementInfo;
 	}
 	return ( iElementNumber-1 );
+}
+
+int CVoxelMesh::OutputHexElementsQuad(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype)
+{
+	int numx = m_XVoxels + 1;
+	int numy = m_YVoxels + 1;
+	int numz = m_ZVoxels + 1;
+	int x, y, z;
+	int numLinearNodes = numx*numy*numz;
+	int numQuadNodes_1 = (numx - 1)*numy*numz;
+	int numQuadNodes_2 = numx * (numy - 1)*numz;
+	vector<POINT_INFO>::iterator itElementInfo = m_ElementsInfo.begin();
+	int iElementNumber = 1;
+
+	vector<POINT_INFO> NewElementInfo;
+
+	if (Filetype == SCIRUN_EXPORT)
+		Output << m_XVoxels * m_YVoxels*m_ZVoxels << "\n";
+
+	for (z = 0; z < m_ZVoxels; ++z)
+	{
+		for (y = 0; y < m_YVoxels; ++y)
+		{
+			for (x = 0; x < m_XVoxels; ++x)
+			{
+				if ((itElementInfo->iYarnIndex == -1 && bOutputMatrix)
+					|| (itElementInfo->iYarnIndex >= 0 && bOutputYarn))
+				{
+					if (Filetype == INP_EXPORT)
+					{
+						Output << iElementNumber << ", ";
+						Output << (x + 1) + y * numx + z * numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + z * numx*numy + 1 << ", ";
+						Output << x + (y + 1)*numx + z * numx*numy + 1 << ", " << x + y * numx + z * numx*numy + 1 << ", ";
+						Output << (x + 1) + y * numx + (z + 1)*numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + (z + 1)*numx*numy + 1 << ", ";
+						Output << x + (y + 1)*numx + (z + 1)*numx*numy + 1 << ", " << x + y * numx + (z + 1)*numx*numy + 1 << ", ";
+						/*
+						Output << numLinearNodes + numQuadNodes_1 + x + y * numx + z * numx*(numy - 1) + 1 << ", " << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + x + (y + 1)*numx + z * numx*numy + 1 << ", ";
+						Output << numLinearNodes + numQuadNodes_1 + x + y * numx + (z + 1) * numx*(numy - 1) + 1 << ", " << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + x + y * numx + z * numx*numy + 1 << ", ";
+						Output << numLinearNodes + numQuadNodes_1 + (x + 1) + y * numx  + z * numx*(numy - 1) + 1 << ", " << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + (x + 1) + (y + 1)*numx + z * numx*numy + 1 << ", ";
+						Output << numLinearNodes + numQuadNodes_1 + (x + 1) + y * numx+(z + 1) * numx*(numy - 1) + 1 << ", " << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + (x + 1) + y * numx + z * numx*numy + 1 << ", ";
+						Output << numLinearNodes + x + y * (numx - 1) + z * (numx - 1)*numy + 1 << ", " << numLinearNodes + x + (y + 1) * (numx - 1) + z * (numx - 1)*numy + 1 << ", ";
+						Output << numLinearNodes + x + y * (numx - 1) + (z + 1) * (numx - 1)*numy + 1 << ", " << numLinearNodes + x + (y + 1) * (numx - 1) + (z + 1) * (numx - 1)*numy + 1 << "\n";
+						*/
+						//Output << << ", " << << ", ";
+						Output << numLinearNodes + numQuadNodes_1 + (x + 1) + y * numx + z * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + (y + 1) * (numx - 1) + z * (numx - 1)*numy + 1 << ", ";
+						Output << numLinearNodes + numQuadNodes_1 + x + y * numx + z * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + y * (numx - 1) + z * (numx - 1)*numy + 1 << ", ";
+						Output << numLinearNodes + numQuadNodes_1 + (x + 1) + y * numx + (z + 1) * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + y * (numx - 1) + (z + 1) * (numx - 1)*numy + 1 << ", ";
+						Output << numLinearNodes + numQuadNodes_1 + x + y * numx + (z + 1) * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + (y + 1) * (numx - 1) + (z + 1) * (numx - 1)*numy + 1 << ", ";
+						Output << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + (x + 1) + y * numx + z * numx*numy + 1 << ", " << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + (x + 1) + (y + 1)*numx + z * numx*numy + 1 << ", ";
+						Output << numLinearNodes + x + (y + 1) * (numx - 1) + z * (numx - 1)*numy + 1 << ", " << numLinearNodes + x + y * (numx - 1) + z * (numx - 1)*numy + 1 << "\n ";
+					}
+					else if (Filetype == SCIRUN_EXPORT)
+					{
+						Output << x + y * numx + z * numx*numy + 1 << ", " << (x + 1) + y * numx + z * numx*numy + 1 << ", ";
+						Output << x + y * numx + (z + 1)*numx*numy + 1 << ", " << (x + 1) + y * numx + (z + 1)*numx*numy + 1 << ", ";
+						Output << x + (y + 1)*numx + z * numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + z * numx*numy + 1 << ", ";
+						Output << x + (y + 1)*numx + (z + 1)*numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + (z + 1)*numx*numy + 1 << "\n";
+					}
+					else  // VTU export
+					{
+						vector<int> Indices;
+						Indices.push_back(x + y * numx + z * numx*numy);
+						Indices.push_back((x + 1) + y * numx + z * numx*numy);
+						Indices.push_back((x + 1) + y * numx + (z + 1)*numx*numy);
+						Indices.push_back(x + y * numx + (z + 1)*numx*numy);
+						Indices.push_back(x + (y + 1)*numx + z * numx*numy);
+						Indices.push_back((x + 1) + (y + 1)*numx + z * numx*numy);
+						Indices.push_back((x + 1) + (y + 1)*numx + (z + 1)*numx*numy);
+						Indices.push_back(x + (y + 1)*numx + (z + 1)*numx*numy);
+						m_Mesh.AddElement(CMesh::HEX, Indices);
+					}
+					++iElementNumber;
+					if (bOutputYarn && !bOutputMatrix) // Just saving yarn so need to make element array with just yarn info
+					{
+						NewElementInfo.push_back(*itElementInfo);
+					}
+
+				}
+				++itElementInfo;
+			}
+		}
+	}
+
+
+	if (bOutputYarn && !bOutputMatrix)
+	{
+		m_ElementsInfo.clear();
+		m_ElementsInfo = NewElementInfo;
+	}
+	return (iElementNumber - 1);
 }
 
 void CVoxelMesh::OutputOrientationsAndElementSets( string Filename )

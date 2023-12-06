@@ -96,3 +96,171 @@ for ( z = 0; z <= m_ZVoxels; ++z )
 	}
 	//Textile.GetPointInformation( CentrePoints, m_ElementsInfo );
 }
+
+
+void CRectangularVoxelMesh::OutputNodesQuad(ostream &Output, CTextile &Textile, int Filetype)
+{
+	int x, y, z;
+	int iNodeIndex = 1;
+	vector<XYZ> CentrePoints;
+	vector<POINT_INFO> RowInfo;
+
+	if (Filetype == SCIRUN_EXPORT)  // if outputting in SCIRun format need to output number of voxels
+		Output << (m_XVoxels + 1)*(m_YVoxels + 1)*(m_ZVoxels + 1) << "\n";
+
+
+	//Output <<  "We here\n";
+
+	// Creates the four corners of quadratic hex element
+	for (z = 0; z <= m_ZVoxels; ++z)
+	{
+		for (y = 0; y <= m_YVoxels; ++y)
+		{
+			for (x = 0; x <= m_XVoxels; ++x)
+			{
+				XYZ Point;
+				Point.x = m_DomainAABB.first.x + m_VoxSize[0] * x;
+				Point.y = m_DomainAABB.first.y + m_VoxSize[1] * y;
+				Point.z = m_DomainAABB.first.z + m_VoxSize[2] * z;
+				if (Filetype == INP_EXPORT)
+					Output << iNodeIndex << ", ";
+
+				if (Filetype == VTU_EXPORT)
+					m_Mesh.AddNode(Point);
+				else
+					Output << Point << "\n";
+
+				if (x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels)
+				{
+					Point.x += 0.5*m_VoxSize[0];
+					Point.y += 0.5*m_VoxSize[1];
+					Point.z += 0.5*m_VoxSize[2];
+					CentrePoints.push_back(Point);
+				}
+				++iNodeIndex;
+			}
+
+		}
+
+
+		// Generates element info hopefully unaffected by my addition of extra nodes for quadratic element
+		RowInfo.clear();   // Changed to do layer at a time instead of row to optimise
+		Textile.GetPointInformation(CentrePoints, RowInfo);
+		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end());
+		CentrePoints.clear();
+	}
+
+
+	// created the nodes associated with diagram one in my note book
+	for (z = 0; z <= m_ZVoxels; ++z)
+	{
+		for (y = 0; y <= m_YVoxels; ++y)
+		{
+			for (x = 0; x < m_XVoxels; ++x) // changed as nodes created on center of voxel so number of nodes in x direction = number of xvoxels 
+			{
+				XYZ Point;
+				Point.x = m_DomainAABB.first.x + m_VoxSize[0] * (x+0.5); // create the nodes on the half edges
+				Point.y = m_DomainAABB.first.y + m_VoxSize[1] * y;
+				Point.z = m_DomainAABB.first.z + m_VoxSize[2] * z;
+				if (Filetype == INP_EXPORT)
+					Output << iNodeIndex << ", ";
+
+				if (Filetype == VTU_EXPORT)
+					m_Mesh.AddNode(Point);
+				else
+					Output << Point << "\n";
+
+				/*
+				if (x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels)
+				{
+					Point.x += 0.5*m_VoxSize[0];
+					Point.y += 0.5*m_VoxSize[1];
+					Point.z += 0.5*m_VoxSize[2];
+					CentrePoints.push_back(Point);
+				}
+				*/
+				++iNodeIndex;
+			}
+
+		}
+
+
+	}
+
+
+
+	// creates the nodes associated with diagram 2 in my note book
+
+	for (z = 0; z <= m_ZVoxels; ++z)
+	{
+		for (y = 0; y < m_YVoxels; ++y)
+		{
+			for (x = 0; x <= m_XVoxels; ++x)
+			{
+				XYZ Point;
+				Point.x = m_DomainAABB.first.x + m_VoxSize[0] * x; 
+				Point.y = m_DomainAABB.first.y + m_VoxSize[1] * (y+0.5);
+				Point.z = m_DomainAABB.first.z + m_VoxSize[2] * z;
+				if (Filetype == INP_EXPORT)
+					Output << iNodeIndex << ", ";
+
+				if (Filetype == VTU_EXPORT)
+					m_Mesh.AddNode(Point);
+				else
+					Output << Point << "\n";
+				/*
+				if (x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels)
+				{
+					Point.x += 0.5*m_VoxSize[0];
+					Point.y += 0.5*m_VoxSize[1];
+					Point.z += 0.5*m_VoxSize[2];
+					CentrePoints.push_back(Point);
+				}
+				*/
+				++iNodeIndex;
+			}
+
+		}
+
+
+	}
+
+	// creates the nodes associated with diagram 3 in my note book
+
+	for (z = 0; z < m_ZVoxels; ++z)
+	{
+		for (y = 0; y <= m_YVoxels; ++y)
+		{
+			for (x = 0; x <= m_XVoxels; ++x)
+			{
+				XYZ Point;
+				Point.x = m_DomainAABB.first.x + m_VoxSize[0] * x;
+				Point.y = m_DomainAABB.first.y + m_VoxSize[1] * y;
+				Point.z = m_DomainAABB.first.z + m_VoxSize[2] * (z+0.5);
+				if (Filetype == INP_EXPORT)
+					Output << iNodeIndex << ", ";
+
+				if (Filetype == VTU_EXPORT)
+					m_Mesh.AddNode(Point);
+				else
+					Output << Point << "\n";
+				/*
+				if (x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels)
+				{
+					Point.x += 0.5*m_VoxSize[0];
+					Point.y += 0.5*m_VoxSize[1];
+					Point.z += 0.5*m_VoxSize[2];
+					CentrePoints.push_back(Point);
+				}
+				*/
+				++iNodeIndex;
+			}
+
+		}
+
+
+	}
+
+
+
+}

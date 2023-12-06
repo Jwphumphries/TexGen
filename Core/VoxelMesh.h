@@ -81,12 +81,14 @@ namespace TexGen
 		void SaveToSCIRun( string Filename, CTextile &Textile );
 		/// Outputs nodes to .inp file and gets element information
 		virtual void OutputNodes(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT) = 0;
+		virtual void OutputNodesQuad(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT) = 0;
 
 		/// Output hex elements to .inp file
 		/**
 		\ return Maximum element index
 		*/
 		virtual int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype = INP_EXPORT );
+		virtual int OutputHexElementsQuad(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype = INP_EXPORT);
 
 
 		/// Outputs yarn orientations and element sets to .ori and .eld files

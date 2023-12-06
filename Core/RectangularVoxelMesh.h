@@ -47,6 +47,7 @@ namespace TexGen
 		
 		/// Outputs nodes to .inp file and gets element information
 		void OutputNodes(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT );
+		void OutputNodesQuad(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT);
 
 		
 		/// Voxel size for each axis
