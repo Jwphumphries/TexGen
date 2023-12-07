@@ -535,10 +535,10 @@ int CVoxelMesh::OutputHexElementsQuad(ostream &Output, bool bOutputMatrix, bool 
 						//Output << << ", " << << ", ";
 						Output << numLinearNodes + numQuadNodes_1 + (x + 1) + y * numx + z * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + (y + 1) * (numx - 1) + z * (numx - 1)*numy + 1 << ", ";
 						Output << numLinearNodes + numQuadNodes_1 + x + y * numx + z * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + y * (numx - 1) + z * (numx - 1)*numy + 1 << ", ";
-						Output << numLinearNodes + numQuadNodes_1 + (x + 1) + y * numx + (z + 1) * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + y * (numx - 1) + (z + 1) * (numx - 1)*numy + 1 << ", ";
-						Output << numLinearNodes + numQuadNodes_1 + x + y * numx + (z + 1) * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + (y + 1) * (numx - 1) + (z + 1) * (numx - 1)*numy + 1 << ", ";
+						Output << numLinearNodes + numQuadNodes_1 + (x + 1) + y * numx + (z + 1) * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + (y + 1) * (numx - 1) + (z + 1) * (numx - 1)*numy + 1 << ", ";
+						Output << numLinearNodes + numQuadNodes_1 + x + y * numx + (z + 1) * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + y * (numx - 1) + (z + 1) * (numx - 1)*numy + 1 << ", ";
 						Output << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + (x + 1) + y * numx + z * numx*numy + 1 << ", " << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + (x + 1) + (y + 1)*numx + z * numx*numy + 1 << ", ";
-						Output << numLinearNodes + x + (y + 1) * (numx - 1) + z * (numx - 1)*numy + 1 << ", " << numLinearNodes + x + y * (numx - 1) + z * (numx - 1)*numy + 1 << "\n ";
+						Output << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + x + (y+1) * numx + z * numx*numy + 1 << ", " << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + x + y*numx + z * numx*numy + 1 << "\n ";
 					}
 					else if (Filetype == SCIRUN_EXPORT)
 					{
