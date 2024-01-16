@@ -35,6 +35,7 @@ namespace TexGen
 
 		/// Outputs hex elements for the elements in the element map
 		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype);
+		int OutputHexElementsQuad(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype);
 
 	protected:
 		/// Calculate voxel size based on number of voxels on each axis and domain size
@@ -45,6 +46,7 @@ namespace TexGen
 
 		/// Outputs nodes to .inp file and gets element information
 		void OutputNodes(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT);
+		void OutputNodesQuad(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT);
 
 		/// x, y, z lengths of rotated voxels
 		XYZ				m_RotatedVoxSize[3];

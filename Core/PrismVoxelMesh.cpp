@@ -115,6 +115,161 @@ void CPrismVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filety
 	}
 }
 
+void CPrismVoxelMesh::OutputNodesQuad(ostream &Output, CTextile &Textile, int Filetype)
+{
+	int x, y, z;
+	int iNodeIndex = 1;
+	vector<XYZ> CentrePoints;
+	vector<POINT_INFO> RowInfo;
+	XYZ StartPoint = m_StartPoint;
+
+	for (z = 0; z <= m_ZVoxels; ++z)
+	{
+		StartPoint = m_StartPoint + m_RotatedVoxSize[2] * z;
+
+		for (y = 0; y <= m_YVoxels; ++y)
+		{
+			XYZ YStartPoint;
+			YStartPoint = StartPoint + m_RotatedVoxSize[1] * y;
+
+			for (x = 0; x <= m_XVoxels; ++x)
+			{
+				XYZ Point;
+				Point = YStartPoint + m_RotatedVoxSize[0] * x;
+
+				if (Filetype == INP_EXPORT)
+				{
+					Output << iNodeIndex << ", ";
+					Output << Point << "\n";
+				}
+				else if (Filetype == VTU_EXPORT)
+					m_Mesh.AddNode(Point);
+
+				if (x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels)
+				{
+					if (m_ElementMap.at(make_pair(x, z)))  // Only store centre points for elements within prism
+					{
+						Point.x += 0.5*m_RotatedVoxSize[0].x;
+						Point.x += 0.5*m_RotatedVoxSize[1].x;
+						Point.x += 0.5*m_RotatedVoxSize[2].x;
+						Point.y += 0.5*m_RotatedVoxSize[0].y;
+						Point.y += 0.5*m_RotatedVoxSize[1].y;
+						Point.y += 0.5*m_RotatedVoxSize[2].y;
+						Point.z += 0.5*m_RotatedVoxSize[0].z;
+						Point.z += 0.5*m_RotatedVoxSize[1].z;
+						Point.z += 0.5*m_RotatedVoxSize[2].z;
+						CentrePoints.push_back(Point);
+					}
+				}
+				++iNodeIndex;
+			}
+
+		}
+		RowInfo.clear();   // Changed to do layer at a time instead of row to optimise
+		Textile.GetPointInformation(CentrePoints, RowInfo);
+		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end());
+		CentrePoints.clear();
+	}
+
+	// created the nodes associated with diagram one in my note book
+	for (z = 0; z <= m_ZVoxels; ++z)
+	{
+		StartPoint = m_StartPoint + m_RotatedVoxSize[2] * z;
+
+		for (y = 0; y <= m_YVoxels; ++y)
+		{
+			XYZ YStartPoint;
+			YStartPoint = StartPoint + m_RotatedVoxSize[1] * y;
+
+			for (x = 0; x < m_XVoxels; ++x)
+			{
+				XYZ Point;
+				Point = YStartPoint + m_RotatedVoxSize[0] * (x + 0.5);
+
+				if (Filetype == INP_EXPORT)
+				{
+					Output << iNodeIndex << ", ";
+					Output << Point << "\n";
+				}
+				else if (Filetype == VTU_EXPORT)
+					m_Mesh.AddNode(Point);
+
+
+				++iNodeIndex;
+			}
+
+		}
+
+	}
+
+	// created the nodes associated with diagram two in my note book
+	for (z = 0; z <= m_ZVoxels; ++z)
+	{
+		StartPoint = m_StartPoint + m_RotatedVoxSize[2] * z;
+
+		for (y = 0; y < m_YVoxels; ++y)
+		{
+			XYZ YStartPoint;
+			YStartPoint = StartPoint + m_RotatedVoxSize[1] * (y + 0.5);
+
+			for (x = 0; x <= m_XVoxels; ++x)
+			{
+				XYZ Point;
+				Point = YStartPoint + m_RotatedVoxSize[0] * x;
+
+				if (Filetype == INP_EXPORT)
+				{
+					Output << iNodeIndex << ", ";
+					Output << Point << "\n";
+				}
+				else if (Filetype == VTU_EXPORT)
+					m_Mesh.AddNode(Point);
+
+
+				++iNodeIndex;
+			}
+
+		}
+
+	}
+
+
+	// created the nodes associated with diagram three in my note book
+	for (z = 0; z < m_ZVoxels; ++z)
+	{
+		StartPoint = m_StartPoint + m_RotatedVoxSize[2] * (z + 0.5);
+
+		for (y = 0; y <= m_YVoxels; ++y)
+		{
+			XYZ YStartPoint;
+			YStartPoint = StartPoint + m_RotatedVoxSize[1] * y;
+
+			for (x = 0; x <= m_XVoxels; ++x)
+			{
+				XYZ Point;
+				Point = YStartPoint + m_RotatedVoxSize[0] * x;
+
+				if (Filetype == INP_EXPORT)
+				{
+					Output << iNodeIndex << ", ";
+					Output << Point << "\n";
+				}
+				else if (Filetype == VTU_EXPORT)
+					m_Mesh.AddNode(Point);
+
+
+				++iNodeIndex;
+			}
+
+		}
+
+	}
+
+
+
+
+}
+
 void CPrismVoxelMesh::GetElementMap(CTextile &Textile)
 {
 	m_ElementMap.clear();
@@ -194,6 +349,93 @@ int CPrismVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool
 							Indices.push_back(x + y*numx + (z + 1)*numx*numy);
 							Indices.push_back(x + (y + 1)*numx + z*numx*numy);
 							Indices.push_back((x + 1) + (y + 1)*numx + z*numx*numy);
+							Indices.push_back((x + 1) + (y + 1)*numx + (z + 1)*numx*numy);
+							Indices.push_back(x + (y + 1)*numx + (z + 1)*numx*numy);
+							m_Mesh.AddElement(CMesh::HEX, Indices);
+						}
+						++iElementNumber;
+						if (bOutputYarn && !bOutputMatrix) // Just saving yarn so need to make element array with just yarn info
+						{
+							NewElementInfo.push_back(*itElementInfo);
+						}
+					}
+					++itElementInfo;  // Only saved element info for elements within domain outline
+				}
+			}
+		}
+	}
+
+
+	if (bOutputYarn && !bOutputMatrix)
+	{
+		m_ElementsInfo.clear();
+		m_ElementsInfo = NewElementInfo;
+	}
+	return (iElementNumber - 1);
+}
+
+
+
+
+
+int CPrismVoxelMesh::OutputHexElementsQuad(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype)
+{
+	int numx = m_XVoxels + 1;
+	int numy = m_YVoxels + 1;
+	int numz = m_ZVoxels + 1;
+	int x, y, z;
+	int numLinearNodes = numx * numy*numz;
+	int numQuadNodes_1 = (numx - 1)*numy*numz;
+	int numQuadNodes_2 = numx * (numy - 1)*numz;
+	vector<POINT_INFO>::iterator itElementInfo = m_ElementsInfo.begin();
+	int iElementNumber = 1;
+
+	vector<POINT_INFO> NewElementInfo;
+
+	if (Filetype == SCIRUN_EXPORT)
+		Output << m_NumElements * m_YVoxels;
+
+	for (z = 0; z < m_ZVoxels; ++z)
+	{
+		for (y = 0; y < m_YVoxels; ++y)
+		{
+			for (x = 0; x < m_XVoxels; ++x)
+			{
+				if (m_ElementMap[make_pair(x, z)])  // Only export elements within domain prism outline
+				{
+					if ((itElementInfo->iYarnIndex == -1 && bOutputMatrix)
+						|| (itElementInfo->iYarnIndex >= 0 && bOutputYarn))
+					{
+						if (Filetype == INP_EXPORT)
+						{
+							Output << iElementNumber << ", ";
+							Output << (x + 1) + y * numx + z * numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + z * numx*numy + 1 << ", ";
+							Output << x + (y + 1)*numx + z * numx*numy + 1 << ", " << x + y * numx + z * numx*numy + 1 << ", ";
+							Output << (x + 1) + y * numx + (z + 1)*numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + (z + 1)*numx*numy + 1 << ", ";
+							Output << x + (y + 1)*numx + (z + 1)*numx*numy + 1 << ", " << x + y * numx + (z + 1)*numx*numy + 1 << ",";
+							Output << numLinearNodes + numQuadNodes_1 + (x + 1) + y * numx + z * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + (y + 1) * (numx - 1) + z * (numx - 1)*numy + 1 << ", ";
+							Output << numLinearNodes + numQuadNodes_1 + x + y * numx + z * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + y * (numx - 1) + z * (numx - 1)*numy + 1 << ", ";
+							Output << numLinearNodes + numQuadNodes_1 + (x + 1) + y * numx + (z + 1) * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + (y + 1) * (numx - 1) + (z + 1) * (numx - 1)*numy + 1 << ", ";
+							Output << numLinearNodes + numQuadNodes_1 + x + y * numx + (z + 1) * numx*(numy - 1) + 1 << ", " << numLinearNodes + x + y * (numx - 1) + (z + 1) * (numx - 1)*numy + 1 << ", ";
+							Output << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + (x + 1) + y * numx + z * numx*numy + 1 << ", " << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + (x + 1) + (y + 1)*numx + z * numx*numy + 1 << ", ";
+							Output << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + x + (y + 1) * numx + z * numx*numy + 1 << ", " << numLinearNodes + numQuadNodes_1 + numQuadNodes_2 + x + y * numx + z * numx*numy + 1 << "\n ";
+						}
+						else if (Filetype == SCIRUN_EXPORT)
+						{
+							Output << x + y * numx + z * numx*numy + 1 << ", " << (x + 1) + y * numx + z * numx*numy + 1 << ", ";
+							Output << x + y * numx + (z + 1)*numx*numy + 1 << ", " << (x + 1) + y * numx + (z + 1)*numx*numy + 1 << ", ";
+							Output << x + (y + 1)*numx + z * numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + z * numx*numy + 1 << ", ";
+							Output << x + (y + 1)*numx + (z + 1)*numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + (z + 1)*numx*numy + 1 << "\n";
+						}
+						else  // VTU export
+						{
+							vector<int> Indices;
+							Indices.push_back(x + y * numx + z * numx*numy);
+							Indices.push_back((x + 1) + y * numx + z * numx*numy);
+							Indices.push_back((x + 1) + y * numx + (z + 1)*numx*numy);
+							Indices.push_back(x + y * numx + (z + 1)*numx*numy);
+							Indices.push_back(x + (y + 1)*numx + z * numx*numy);
+							Indices.push_back((x + 1) + (y + 1)*numx + z * numx*numy);
 							Indices.push_back((x + 1) + (y + 1)*numx + (z + 1)*numx*numy);
 							Indices.push_back(x + (y + 1)*numx + (z + 1)*numx*numy);
 							m_Mesh.AddElement(CMesh::HEX, Indices);
