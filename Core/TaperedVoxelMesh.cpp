@@ -65,6 +65,22 @@ void CTaperedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int File
 	vector<XYZ> CentrePoints;
 	vector<POINT_INFO> RowInfo;
 	XYZ StartPoint = m_StartPoint;
+	XY Centroid;
+
+	vector<XYZ> CentroidPoints;
+	XYZ p1 = XYZ(0, 1, 0);
+	XYZ p2 = XYZ(1, 1, 0);
+	XYZ p3 = XYZ(1, 0, 0);
+	XYZ p4 = XYZ(0, 0, 0);
+
+	CentroidPoints.push_back(p1);
+	CentroidPoints.push_back(p2);
+	CentroidPoints.push_back(p3);
+	CentroidPoints.push_back(p4);
+
+
+
+	Centroid = GetCentroid(&CentroidPoints.front(), 4);
 
 	for (z = 0; z <= m_ZVoxels; ++z)
 	{

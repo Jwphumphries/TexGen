@@ -1268,6 +1268,29 @@ namespace TexGen
 		return 0.5*dArea;
 	}
 
+	inline XY GetCentroid(XYZ Points[], int iNumPoints)
+	{
+		int i;
+		XYZ Point1, Point2;
+		XY Centroid;
+		double Area;
+
+		Area = GetArea(Points, iNumPoints);
+
+		for (i = 0; i < iNumPoints; ++i)
+		{
+			Point1 = Points[i];
+			Point2 = Points[(i + 1) % iNumPoints];
+			Centroid.x += (Point1.x + Point2.x)*(Point1.x*Point2.y - Point2.x*Point1.y);
+			Centroid.y += (Point1.y + Point2.y)*(Point1.x*Point2.y - Point2.x*Point1.y);
+		}
+
+		Centroid.x /= (6 * Area);
+		Centroid.y /= (6 * Area);
+
+		return Centroid;
+	}
+
 	/// P1, P2, P3 are the three triangle corners, P is the points to be tested
 	inline bool PointInsideTriangle(const XYZ &P1, const XYZ &P2, const XYZ &P3, const XYZ &P)
 	{
