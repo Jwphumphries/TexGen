@@ -59,5 +59,11 @@ namespace TexGen
 		/// Number of elements in x-z slice which are output
 		int m_NumElements;
 
+		int XVoxels1 = 50;
+		int XVoxels2 = 100;
+		int XVoxels3 = 5;
+
+		int TotalXVoxels = XVoxels1 + XVoxels2;
+
 	};
 };	// namespace TexGen

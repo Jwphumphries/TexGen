@@ -66,6 +66,7 @@ void CTaperedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int File
 	vector<POINT_INFO> RowInfo;
 	XYZ StartPoint = m_StartPoint;
 	XY Centroid;
+	XYZ CentroidPoint;
 
 	vector<XYZ> CentroidPoints;
 	XYZ p1 = XYZ(0, 1, 0);
@@ -78,47 +79,281 @@ void CTaperedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int File
 	CentroidPoints.push_back(p3);
 	CentroidPoints.push_back(p4);
 
-
-
 	Centroid = GetCentroid(&CentroidPoints.front(), 4);
+
+
+
+
+
+
+	// Variables 
+
+
+
+
+	double X;
+	double Za;
+	double Zb;
+
+	double DeltaX;
+	double DeltaZa;
+	double DeltaZb;
+
+	double m;
+	double c;
+	double zValue;
+
+	XYZ P0a;
+	XYZ P0b;
+
+	XYZ P1a;
+	XYZ P1b;
+
+	XYZ Pna;
+	XYZ Pnb;
+
+
+
+
+
 
 	for (z = 0; z <= m_ZVoxels; ++z)
 	{
-		StartPoint = m_StartPoint + m_RotatedVoxSize[2] * z;
+		
 
 		for (y = 0; y <= m_YVoxels; ++y)
 		{
 			XYZ YStartPoint;
-			YStartPoint = StartPoint + m_RotatedVoxSize[1] * y;
+			YStartPoint = m_StartPoint + m_RotatedVoxSize[1] * y;
 
-			for (x = 0; x <= m_XVoxels; ++x)
+			for (x = 0; x <= TotalXVoxels; ++x)
 			{
 				XYZ Point;
-				Point = YStartPoint + m_RotatedVoxSize[0] * x;
+				XYZ Point2;
+				XYZ Point3;
+				XYZ Point4;
 
-				if (Filetype == INP_EXPORT)
-				{
-					Output << iNodeIndex << ", ";
-					Output << Point << "\n";
-				}
-				else if (Filetype == VTU_EXPORT)
-					m_Mesh.AddNode(Point);
 
-				if (x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels)
+				if (x == 0)
 				{
-					if (m_ElementMap.at(make_pair(x, z)))  // Only store centre points for elements within prism
+
+
+					StartPoint = YStartPoint + m_RotatedVoxSize[2] * z;
+					Point = StartPoint + m_RotatedVoxSize[0] * x;
+
+					if (Filetype == INP_EXPORT)
 					{
-						Point.x += 0.5*m_RotatedVoxSize[0].x;
-						Point.x += 0.5*m_RotatedVoxSize[1].x;
-						Point.x += 0.5*m_RotatedVoxSize[2].x;
-						Point.y += 0.5*m_RotatedVoxSize[0].y;
-						Point.y += 0.5*m_RotatedVoxSize[1].y;
-						Point.y += 0.5*m_RotatedVoxSize[2].y;
-						Point.z += 0.5*m_RotatedVoxSize[0].z;
-						Point.z += 0.5*m_RotatedVoxSize[1].z;
-						Point.z += 0.5*m_RotatedVoxSize[2].z;
-						CentrePoints.push_back(Point);
+						Output << iNodeIndex << ", ";
+						Output << Point << "\n";
 					}
+					else if (Filetype == VTU_EXPORT)
+						m_Mesh.AddNode(Point);
+
+				}
+				else if (x > 0 && x <= XVoxels1)
+				{
+					P0a = XYZ(0,0,-0.105);
+					P0b = XYZ(6, 0, -0.105);
+
+					P1a = XYZ(0, 0, 1.105);
+					P1b = XYZ(6, 0, 1.105);
+
+					X = P0b.x - P0a.x;
+
+					Za = P1a.z - P0a.z;
+					Zb = P1b.z - P0b.z;
+
+					DeltaX = X / XVoxels1;
+
+					DeltaZa = Za / m_ZVoxels;
+					DeltaZb = Zb / m_ZVoxels;
+
+
+					m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
+
+					c = P0a.z + DeltaZa * z - m * P0a.x;
+
+					zValue = m * (P0a.x + DeltaX * x) + c;
+
+
+
+					StartPoint = YStartPoint;
+					StartPoint.z = zValue;
+
+					Point = StartPoint + XYZ((P0a.x + DeltaX * x), 0, 0);
+
+
+					if (Filetype == INP_EXPORT)
+					{
+						Output << iNodeIndex << ", ";
+						Output << Point << "\n";
+					}
+					else if (Filetype == VTU_EXPORT)
+						m_Mesh.AddNode(Point);
+
+
+					// Points for centroid
+
+					//Point 2
+					//m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
+
+					//c = P0a.z + DeltaZa * z - m * P0a.x;
+
+					zValue = m * (P0a.x + DeltaX * (x - 1)) + c;
+
+
+
+					StartPoint = YStartPoint;
+					StartPoint.z = zValue;
+
+					Point2 = StartPoint + XYZ((P0a.x + DeltaX * (x - 1)), 0, 0);
+
+					//Point 3
+
+					m = ((P0b.z + DeltaZb * (z + 1)) - (P0a.z + DeltaZa * (z + 1))) / (P0b.x - P0a.x);
+
+					c = P0a.z + DeltaZa * (z + 1) - m * P0a.x;
+
+					zValue = m * (P0a.x + DeltaX * (x - 1)) + c;
+
+
+
+					StartPoint = YStartPoint;
+					StartPoint.z = zValue;
+
+					Point3 = StartPoint + XYZ((P0a.x + DeltaX * (x - 1)), 0, 0);
+
+					//Point4
+
+					m = ((P0b.z + DeltaZb * (z + 1)) - (P0a.z + DeltaZa * (z + 1))) / (P0b.x - P0a.x);
+
+					c = P0a.z + DeltaZa * (z + 1) - m * P0a.x;
+
+					zValue = m * (P0a.x + DeltaX * x) + c;
+
+
+
+					StartPoint = YStartPoint;
+					StartPoint.z = zValue;
+
+					Point4 = StartPoint + XYZ((P0a.x + DeltaX * x), 0, 0);
+
+
+				}
+				else if (x > XVoxels1 && x <= (XVoxels1 + XVoxels2))
+				{
+					P0a = XYZ(6, 0, -0.105);
+					P0b = XYZ(18, 0, -0.105);
+
+					P1a = XYZ(6, 0, 1.105);
+					P1b = XYZ(18, 0, 0.22);
+
+					X = P0b.x - P0a.x;
+
+					Za = P1a.z - P0a.z;
+					Zb = P1b.z - P0b.z;
+
+					DeltaX = X / XVoxels2;
+
+					DeltaZa = Za / m_ZVoxels;
+					DeltaZb = Zb / m_ZVoxels;
+
+
+					m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
+
+					c = P0a.z + DeltaZa * z - m * P0a.x;
+
+					zValue = m * (P0a.x + DeltaX * (x - XVoxels1)) + c;
+
+
+
+					StartPoint = YStartPoint;
+					StartPoint.z = zValue;
+					Point = StartPoint + XYZ((P0a.x + DeltaX * (x - XVoxels1)), 0, 0);
+
+
+					if (Filetype == INP_EXPORT)
+					{
+						Output << iNodeIndex << ", ";
+						Output << Point << "\n";
+					}
+					else if (Filetype == VTU_EXPORT)
+						m_Mesh.AddNode(Point);
+
+
+
+					// Points for centroid
+
+					//Point 2
+					//m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
+
+					//c = P0a.z + DeltaZa * z - m * P0a.x;
+
+					zValue = m * (P0a.x + DeltaX * (x - 1 - XVoxels1)) + c;
+
+
+
+					StartPoint = YStartPoint;
+					StartPoint.z = zValue;
+					Point2 = StartPoint + XYZ((P0a.x + DeltaX * (x - 1 - XVoxels1)), 0, 0);
+
+					//Point 3
+
+					m = ((P0b.z + DeltaZb * (z + 1)) - (P0a.z + DeltaZa * (z + 1))) / (P0b.x - P0a.x);
+
+					c = P0a.z + DeltaZa * (z + 1) - m * P0a.x;
+
+					zValue = m * (P0a.x + DeltaX * (x - 1 - XVoxels1)) + c;
+
+
+
+					StartPoint = YStartPoint;
+					StartPoint.z = zValue;
+
+					Point3 = StartPoint + XYZ((P0a.x + DeltaX * (x - 1 - XVoxels1)), 0, 0);
+
+					//Point4
+
+					m = ((P0b.z + DeltaZb * (z + 1)) - (P0a.z + DeltaZa * (z + 1))) / (P0b.x - P0a.x);
+
+					c = P0a.z + DeltaZa * (z + 1) - m * P0a.x;
+
+					zValue = m * (P0a.x + DeltaX * (x - XVoxels1)) + c;
+
+
+
+					StartPoint = YStartPoint;
+					StartPoint.z = zValue;
+
+					Point4 = StartPoint + XYZ((P0a.x + DeltaX * (x - XVoxels1)), 0, 0);
+				}
+				
+
+
+
+				// Finding centre points of accociated elements by finding the centroid
+				if (x > 0 && x <= TotalXVoxels && y < m_YVoxels && z < m_ZVoxels)
+				{
+
+					
+					
+
+					CentroidPoints.clear();
+
+					CentroidPoints.push_back(Point);
+					CentroidPoints.push_back(Point2);
+					CentroidPoints.push_back(Point3);
+					CentroidPoints.push_back(Point4);
+
+
+					Centroid = GetCentroidXZ(&CentroidPoints.front(), 4);
+
+
+
+					CentroidPoint = XYZ(Centroid.x, m_StartPoint.y + m_RotatedVoxSize[1].y * (y + 0.5), Centroid.y);
+
+					CentrePoints.push_back(CentroidPoint);
+					
 				}
 				++iNodeIndex;
 			}
@@ -317,6 +552,9 @@ void CTaperedVoxelMesh::GetElementMap(CTextile &Textile)
 	}
 }
 
+
+/*
+
 int CTaperedVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype)
 {
 	int numx = m_XVoxels + 1;
@@ -390,6 +628,78 @@ int CTaperedVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bo
 	return (iElementNumber - 1);
 }
 
+*/
+
+int CTaperedVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype)
+{
+	int numx = TotalXVoxels + 1;
+	int numy = m_YVoxels + 1;
+	int x, y, z;
+	vector<POINT_INFO>::iterator itElementInfo = m_ElementsInfo.begin();
+	int iElementNumber = 1;
+
+	vector<POINT_INFO> NewElementInfo;
+
+	if (Filetype == SCIRUN_EXPORT)
+		Output << m_XVoxels * m_YVoxels*m_ZVoxels << "\n";
+
+	for (z = 0; z < m_ZVoxels; ++z)
+	{
+		for (y = 0; y < m_YVoxels; ++y)
+		{
+			for (x = 0; x < TotalXVoxels; ++x)
+			{
+				if ((itElementInfo->iYarnIndex == -1 && bOutputMatrix)
+					|| (itElementInfo->iYarnIndex >= 0 && bOutputYarn))
+				{
+					if (Filetype == INP_EXPORT)
+					{
+						Output << iElementNumber << ", ";
+						Output << (x + 1) + y * numx + z * numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + z * numx*numy + 1 << ", ";
+						Output << x + (y + 1)*numx + z * numx*numy + 1 << ", " << x + y * numx + z * numx*numy + 1 << ", ";
+						Output << (x + 1) + y * numx + (z + 1)*numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + (z + 1)*numx*numy + 1 << ", ";
+						Output << x + (y + 1)*numx + (z + 1)*numx*numy + 1 << ", " << x + y * numx + (z + 1)*numx*numy + 1 << "\n";
+					}
+					else if (Filetype == SCIRUN_EXPORT)
+					{
+						Output << x + y * numx + z * numx*numy + 1 << ", " << (x + 1) + y * numx + z * numx*numy + 1 << ", ";
+						Output << x + y * numx + (z + 1)*numx*numy + 1 << ", " << (x + 1) + y * numx + (z + 1)*numx*numy + 1 << ", ";
+						Output << x + (y + 1)*numx + z * numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + z * numx*numy + 1 << ", ";
+						Output << x + (y + 1)*numx + (z + 1)*numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + (z + 1)*numx*numy + 1 << "\n";
+					}
+					else  // VTU export
+					{
+						vector<int> Indices;
+						Indices.push_back(x + y * numx + z * numx*numy);
+						Indices.push_back((x + 1) + y * numx + z * numx*numy);
+						Indices.push_back((x + 1) + y * numx + (z + 1)*numx*numy);
+						Indices.push_back(x + y * numx + (z + 1)*numx*numy);
+						Indices.push_back(x + (y + 1)*numx + z * numx*numy);
+						Indices.push_back((x + 1) + (y + 1)*numx + z * numx*numy);
+						Indices.push_back((x + 1) + (y + 1)*numx + (z + 1)*numx*numy);
+						Indices.push_back(x + (y + 1)*numx + (z + 1)*numx*numy);
+						m_Mesh.AddElement(CMesh::HEX, Indices);
+					}
+					++iElementNumber;
+					if (bOutputYarn && !bOutputMatrix) // Just saving yarn so need to make element array with just yarn info
+					{
+						NewElementInfo.push_back(*itElementInfo);
+					}
+
+				}
+				++itElementInfo;
+			}
+		}
+	}
+
+
+	if (bOutputYarn && !bOutputMatrix)
+	{
+		m_ElementsInfo.clear();
+		m_ElementsInfo = NewElementInfo;
+	}
+	return (iElementNumber - 1);
+}
 
 
 
