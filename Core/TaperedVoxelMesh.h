@@ -37,7 +37,7 @@ namespace TexGen
 		void SaveVoxelMesh(CTextile &Textile, string OutputFilename, vector<XYZ> &P0Arr, vector<XYZ> &P1Arr, vector<int> &XVoxNumArr, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType = 0, int FileType = INP_EXPORT);
 		/// Outputs hex elements for the elements in the element map
 		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype);
-		int OutputHexElementsQuad(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype);
+		//int OutputHexElementsQuad(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype);
 
 	protected:
 		/// Calculate voxel size based on number of voxels on each axis and domain size
@@ -49,7 +49,7 @@ namespace TexGen
 		/// Outputs nodes to .inp file and gets element information
 		void OutputNodes(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT);
 		void OutputNodesQuad(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT);
-		void OutputNodesTapered(ostream &Output);
+		//XY OutputNodesTapered(ostream &Output, XYZ P0a, XYZ P0b, XYZ P1a, XYZ P1b, int NumXVoxels, int *NodeIndex, int SectionIndex, XYZ YStartPoint, int y, int z, int Filetype, vector<XYZ> &CentrePoints);
 
 		/// x, y, z lengths of rotated voxels
 		XYZ				m_RotatedVoxSize[3];

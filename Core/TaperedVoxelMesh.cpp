@@ -78,6 +78,16 @@ void CTaperedVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, 
 	m_NumSections = XVoxNumArr.size();
 	m_YVoxels = YVoxNum;
 	m_ZVoxels = ZVoxNum;
+	m_XVoxels = 0;
+
+	int i;
+
+	for (i = 0; i < m_NumSections; i++)
+	{
+		m_XVoxels += m_XVoxNumArr[i];
+	}
+
+
 	TGLOG("Calculating voxel sizes");
 	if (!CalculateVoxelSizes(Textile))
 	{
@@ -107,320 +117,12 @@ void CTaperedVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, 
 }
 
 
-/*
-void CTaperedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filetype)
-{
-	int x, y, z;
-	int iNodeIndex = 1;
-	vector<XYZ> CentrePoints;
-	vector<POINT_INFO> RowInfo;
-	XYZ StartPoint = m_StartPoint;
-	XY Centroid;
-	XYZ CentroidPoint;
-
-	vector<XYZ> CentroidPoints;
-	XYZ p1 = XYZ(0, 1, 0);
-	XYZ p2 = XYZ(1, 1, 0);
-	XYZ p3 = XYZ(1, 0, 0);
-	XYZ p4 = XYZ(0, 0, 0);
-
-	CentroidPoints.push_back(p1);
-	CentroidPoints.push_back(p2);
-	CentroidPoints.push_back(p3);
-	CentroidPoints.push_back(p4);
-
-	Centroid = GetCentroid(&CentroidPoints.front(), 4);
-
-
-
-
-
-
-	// Variables 
-
-
-
-
-	double X;
-	double Za;
-	double Zb;
-
-	double DeltaX;
-	double DeltaZa;
-	double DeltaZb;
-
-	double m;
-	double c;
-	double zValue;
-
-	XYZ P0a;
-	XYZ P0b;
-
-	XYZ P1a;
-	XYZ P1b;
-
-	XYZ Pna;
-	XYZ Pnb;
-
-
-
-
-
-
-	for (z = 0; z <= m_ZVoxels; ++z)
-	{
-		
-
-		for (y = 0; y <= m_YVoxels; ++y)
-		{
-			XYZ YStartPoint;
-			YStartPoint = m_StartPoint + m_RotatedVoxSize[1] * y;
-
-			for (x = 0; x <= TotalXVoxels; ++x)
-			{
-				XYZ Point;
-				XYZ Point2;
-				XYZ Point3;
-				XYZ Point4;
-
-
-				if (x == 0)
-				{
-
-
-					StartPoint = YStartPoint + m_RotatedVoxSize[2] * z;
-					Point = StartPoint + m_RotatedVoxSize[0] * x;
-
-					if (Filetype == INP_EXPORT)
-					{
-						Output << iNodeIndex << ", ";
-						Output << Point << "\n";
-					}
-					else if (Filetype == VTU_EXPORT)
-						m_Mesh.AddNode(Point);
-
-				}
-				else if (x > 0 && x <= XVoxels1)
-				{
-					P0a = XYZ(0,0,-0.105);
-					P0b = XYZ(6, 0, -0.105);
-
-					P1a = XYZ(0, 0, 1.105);
-					P1b = XYZ(6, 0, 1.105);
-
-					X = P0b.x - P0a.x;
-
-					Za = P1a.z - P0a.z;
-					Zb = P1b.z - P0b.z;
-
-					DeltaX = X / XVoxels1;
-
-					DeltaZa = Za / m_ZVoxels;
-					DeltaZb = Zb / m_ZVoxels;
-
-
-					m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
-
-					c = P0a.z + DeltaZa * z - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * x) + c;
-
-
-
-					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-
-					Point = StartPoint + XYZ((P0a.x + DeltaX * x), 0, 0);
-
-
-					if (Filetype == INP_EXPORT)
-					{
-						Output << iNodeIndex << ", ";
-						Output << Point << "\n";
-					}
-					else if (Filetype == VTU_EXPORT)
-						m_Mesh.AddNode(Point);
-
-
-					// Points for centroid
-
-					//Point 2
-					//m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
-
-					//c = P0a.z + DeltaZa * z - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * (x - 1)) + c;
-
-
-
-					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-
-					Point2 = StartPoint + XYZ((P0a.x + DeltaX * (x - 1)), 0, 0);
-
-					//Point 3
-
-					m = ((P0b.z + DeltaZb * (z + 1)) - (P0a.z + DeltaZa * (z + 1))) / (P0b.x - P0a.x);
-
-					c = P0a.z + DeltaZa * (z + 1) - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * (x - 1)) + c;
-
-
-
-					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-
-					Point3 = StartPoint + XYZ((P0a.x + DeltaX * (x - 1)), 0, 0);
-
-					//Point4
-
-					m = ((P0b.z + DeltaZb * (z + 1)) - (P0a.z + DeltaZa * (z + 1))) / (P0b.x - P0a.x);
-
-					c = P0a.z + DeltaZa * (z + 1) - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * x) + c;
-
-
-
-					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-
-					Point4 = StartPoint + XYZ((P0a.x + DeltaX * x), 0, 0);
-
-
-				}
-				else if (x > XVoxels1 && x <= (XVoxels1 + XVoxels2))
-				{
-					P0a = XYZ(6, 0, -0.105);
-					P0b = XYZ(18, 0, -0.105);
-
-					P1a = XYZ(6, 0, 1.105);
-					P1b = XYZ(18, 0, 0.22);
-
-					X = P0b.x - P0a.x;
-
-					Za = P1a.z - P0a.z;
-					Zb = P1b.z - P0b.z;
-
-					DeltaX = X / XVoxels2;
-
-					DeltaZa = Za / m_ZVoxels;
-					DeltaZb = Zb / m_ZVoxels;
-
-
-					m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
-
-					c = P0a.z + DeltaZa * z - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * (x - XVoxels1)) + c;
-
-
-
-					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-					Point = StartPoint + XYZ((P0a.x + DeltaX * (x - XVoxels1)), 0, 0);
-
-
-					if (Filetype == INP_EXPORT)
-					{
-						Output << iNodeIndex << ", ";
-						Output << Point << "\n";
-					}
-					else if (Filetype == VTU_EXPORT)
-						m_Mesh.AddNode(Point);
-
-
-
-					// Points for centroid
-
-					//Point 2
-					//m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
-
-					//c = P0a.z + DeltaZa * z - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * (x - 1 - XVoxels1)) + c;
-
-
-
-					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-					Point2 = StartPoint + XYZ((P0a.x + DeltaX * (x - 1 - XVoxels1)), 0, 0);
-
-					//Point 3
-
-					m = ((P0b.z + DeltaZb * (z + 1)) - (P0a.z + DeltaZa * (z + 1))) / (P0b.x - P0a.x);
-
-					c = P0a.z + DeltaZa * (z + 1) - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * (x - 1 - XVoxels1)) + c;
-
-
-
-					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-
-					Point3 = StartPoint + XYZ((P0a.x + DeltaX * (x - 1 - XVoxels1)), 0, 0);
-
-					//Point4
-
-					m = ((P0b.z + DeltaZb * (z + 1)) - (P0a.z + DeltaZa * (z + 1))) / (P0b.x - P0a.x);
-
-					c = P0a.z + DeltaZa * (z + 1) - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * (x - XVoxels1)) + c;
-
-
-
-					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-
-					Point4 = StartPoint + XYZ((P0a.x + DeltaX * (x - XVoxels1)), 0, 0);
-				}
-				
-
-
-
-				// Finding centre points of accociated elements by finding the centroid
-				if (x > 0 && x <= TotalXVoxels && y < m_YVoxels && z < m_ZVoxels)
-				{
-
-					
-					
-
-					CentroidPoints.clear();
-
-					CentroidPoints.push_back(Point);
-					CentroidPoints.push_back(Point2);
-					CentroidPoints.push_back(Point3);
-					CentroidPoints.push_back(Point4);
-
-
-					Centroid = GetCentroidXZ(&CentroidPoints.front(), 4);
-
-
-
-					CentroidPoint = XYZ(Centroid.x, m_StartPoint.y + m_RotatedVoxSize[1].y * (y + 0.5), Centroid.y);
-
-					CentrePoints.push_back(CentroidPoint);
-					
-				}
-				++iNodeIndex;
-			}
-
-		}
-		RowInfo.clear();   // Changed to do layer at a time instead of row to optimise
-		Textile.GetPointInformation(CentrePoints, RowInfo);
-		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end());
-		CentrePoints.clear();
-	}
-}
-*/
 
 void CTaperedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filetype)
 {
 	int x, y, z, SectionNum;
 	int iNodeIndex = 1;
+	int *pNodeIndex = &iNodeIndex;
 	vector<XYZ> CentrePoints;
 	vector<POINT_INFO> RowInfo;
 	XYZ StartPoint = m_StartPoint;
@@ -428,28 +130,245 @@ void CTaperedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int File
 	XYZ CentroidPoint;
 
 	vector<XYZ> CentroidPoints;
-	XYZ p1 = XYZ(0, 1, 0);
-	XYZ p2 = XYZ(1, 1, 0);
-	XYZ p3 = XYZ(1, 0, 0);
-	XYZ p4 = XYZ(0, 0, 0);
-
-	CentroidPoints.push_back(p1);
-	CentroidPoints.push_back(p2);
-	CentroidPoints.push_back(p3);
-	CentroidPoints.push_back(p4);
-
-	Centroid = GetCentroid(&CentroidPoints.front(), 4);
-
-
-
-
-
 
 	// Variables 
+	double X;
+	double Za;
+	double Zb;
+
+	double DeltaX;
+	double DeltaZa;
+	double DeltaZb;
+
+	double m;
+	double c;
+	double zValue;
+
+	XYZ P0a;
+	XYZ P0b;
+
+	XYZ P1a;
+	XYZ P1b;
+
+	XYZ Pna;
+	XYZ Pnb; 
+
+	XYZ dirAA;
+	XYZ dirBB;
+	XYZ dirAB;
+
+	XYZ Pnab;
+
+	// Point creation is based on diagrams in note book
+	for (z = 0; z <= m_ZVoxels; ++z)
+	{
+
+
+		for (y = 0; y <= m_YVoxels; ++y)
+		{
+			XYZ YStartPoint;
+			YStartPoint = m_StartPoint + m_RotatedVoxSize[1] * y;
+
+			for (SectionNum = 0; SectionNum < m_NumSections; ++SectionNum)
+			{
+				XYZ Point;
+				XYZ Point2;
+				XYZ Point3;
+				XYZ Point4;
+
+				P0a = m_P0Arr[SectionNum];
+				P0b = m_P0Arr[SectionNum + 1];
+
+				P1a = m_P1Arr[SectionNum];
+				P1b = m_P1Arr[SectionNum + 1];
 
 
 
 
+				if (SectionNum == 0)
+				{
+					Za = GetLength(P1a - P0a);
+					Zb = GetLength(P1b - P0b);
+
+
+
+					DeltaZa = Za / m_ZVoxels;
+					DeltaZb = Zb / m_ZVoxels;
+
+					// Calculating direction vectors AA and BB
+					dirAA = P1a - P0a;
+					dirBB = P1b - P0b;
+
+					Normalise(dirAA);
+					Normalise(dirBB);
+
+
+
+					// equations of point Pna and Pnb
+					Pna = P0a + z * DeltaZa * dirAA;
+
+					StartPoint = YStartPoint + Pna;    //+ Pna;
+					Point = StartPoint;  // +m_RotatedVoxSize[0] * x;
+
+					if (Filetype == INP_EXPORT)
+					{
+						Output << iNodeIndex << ", ";
+						Output << Point << "\n";
+					}
+					else if (Filetype == VTU_EXPORT)
+						m_Mesh.AddNode(Point);
+					++iNodeIndex;
+				}
+
+
+				for (x = 1; x <= m_XVoxNumArr[SectionNum]; x++)
+				{
+					
+					Za = GetLength(P1a - P0a);
+					Zb = GetLength(P1b - P0b);
+
+
+
+					DeltaZa = Za / m_ZVoxels;
+					DeltaZb = Zb / m_ZVoxels;
+
+					// Calculating direction vectors AA and BB
+					dirAA = P1a - P0a;
+					dirBB = P1b - P0b;
+
+					Normalise(dirAA);
+					Normalise(dirBB);
+
+
+
+					// equations of point Pna and Pnb
+					Pna = P0a + z * DeltaZa * dirAA;
+					Pnb = P0b + z * DeltaZb * dirBB;
+
+
+					// Calculating everything AB
+					X = GetLength(Pnb - Pna);
+					DeltaX = X / m_XVoxNumArr[SectionNum];
+					dirAB = Pnb - Pna;
+					Normalise(dirAB);
+
+					
+
+
+					Pnab = Pna + x * DeltaX * dirAB;
+
+					//m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
+
+					//c = P0a.z + DeltaZa * z - m * P0a.x;
+
+					//zValue = m * (P0a.x + DeltaX * x) + c;
+
+					StartPoint = YStartPoint;
+					//StartPoint.z = zValue;
+
+					Point = StartPoint + Pnab;
+
+					if (Filetype == INP_EXPORT)
+					{
+						Output << iNodeIndex << ", ";
+						Output << Point << "\n";
+					}
+					else if (Filetype == VTU_EXPORT)
+						m_Mesh.AddNode(Point);
+
+
+					// Points for centroid
+
+					//Point 2
+					Pnab = Pna + (x - 1) * DeltaX * dirAB;
+					StartPoint = YStartPoint;
+					Point2 = StartPoint + Pnab;
+
+					//Point 3
+
+					// equations of point Pna and Pnb
+					Pna = P0a + (z + 1) * DeltaZa * dirAA;
+					Pnb = P0b + (z + 1) * DeltaZb * dirBB;
+
+
+					// Calculating everything AB
+					X = GetLength(Pnb - Pna);
+					DeltaX = X / m_XVoxNumArr[SectionNum];
+					dirAB = Pnb - Pna;
+					Normalise(dirAB);
+
+
+					Pnab = Pna + (x - 1) * DeltaX * dirAB;
+
+					StartPoint = YStartPoint;
+					
+					Point3 = StartPoint + Pnab;
+
+					//Point4
+
+					// equations of point Pna and Pnb
+					Pna = P0a + (z + 1) * DeltaZa * dirAA;
+					Pnb = P0b + (z + 1) * DeltaZb * dirBB;
+
+
+					// Calculating everything AB
+					X = GetLength(Pnb - Pna);
+					DeltaX = X / m_XVoxNumArr[SectionNum];
+					dirAB = Pnb - Pna;
+					Normalise(dirAB);
+
+
+					Pnab = Pna + x * DeltaX * dirAB;
+
+					StartPoint = YStartPoint;
+
+					Point4 = StartPoint + Pnab;
+
+					// Finding centre points of accociated elements by finding the centroid
+					if (x > 0 && x <= m_XVoxNumArr[SectionNum] && y < m_YVoxels && z < m_ZVoxels)
+					{
+
+						CentroidPoints.clear();
+
+						CentroidPoints.push_back(Point);
+						CentroidPoints.push_back(Point2);
+						CentroidPoints.push_back(Point3);
+						CentroidPoints.push_back(Point4);
+
+						Centroid = GetCentroidXZ(&CentroidPoints.front(), 4);
+
+						CentroidPoint = XYZ(Centroid.x, m_StartPoint.y + m_RotatedVoxSize[1].y * (y + 0.5), Centroid.y);
+
+						CentrePoints.push_back(CentroidPoint);
+
+					}
+					++iNodeIndex;
+				}
+			}
+
+		}
+		RowInfo.clear();   // Changed to do layer at a time instead of row to optimise
+		Textile.GetPointInformation(CentrePoints, RowInfo);
+		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end());
+		CentrePoints.clear();
+	}
+}
+
+
+void CTaperedVoxelMesh::OutputNodesQuad(ostream &Output, CTextile &Textile, int Filetype)
+{
+	int x, y, z, SectionNum;
+	int iNodeIndex = 1;
+	int *pNodeIndex = &iNodeIndex;
+	vector<XYZ> CentrePoints;
+	vector<POINT_INFO> RowInfo;
+	XYZ StartPoint = m_StartPoint;
+	XY Centroid;
+	XYZ CentroidPoint;
+
+	vector<XYZ> CentroidPoints;
+
+	// Variables 
 	double X;
 	double Za;
 	double Zb;
@@ -471,11 +390,13 @@ void CTaperedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int File
 	XYZ Pna;
 	XYZ Pnb;
 
+	XYZ dirAA;
+	XYZ dirBB;
+	XYZ dirAB;
 
+	XYZ Pnab;
 
-
-
-
+	// Point creation is based on diagrams in note book
 	for (z = 0; z <= m_ZVoxels; ++z)
 	{
 
@@ -485,20 +406,44 @@ void CTaperedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int File
 			XYZ YStartPoint;
 			YStartPoint = m_StartPoint + m_RotatedVoxSize[1] * y;
 
-			for (SectionNum = 0; SectionNum <= m_NumSections; ++SectionNum)
+			for (SectionNum = 0; SectionNum < m_NumSections; ++SectionNum)
 			{
 				XYZ Point;
 				XYZ Point2;
 				XYZ Point3;
 				XYZ Point4;
 
+				P0a = m_P0Arr[SectionNum];
+				P0b = m_P0Arr[SectionNum + 1];
 
-				if (x == 0)
+				P1a = m_P1Arr[SectionNum];
+				P1b = m_P1Arr[SectionNum + 1];
+
+				
+
+
+				if (SectionNum == 0)
 				{
+					Za = GetLength(P1a - P0a);
+					Zb = GetLength(P1b - P0b);
+
+					DeltaZa = Za / m_ZVoxels;
+					DeltaZb = Zb / m_ZVoxels;
+
+					// Calculating direction vectors AA and BB
+					dirAA = P1a - P0a;
+					dirBB = P1b - P0b;
+
+					Normalise(dirAA);
+					Normalise(dirBB);
 
 
-					StartPoint = YStartPoint + m_RotatedVoxSize[2] * z;
-					Point = StartPoint + m_RotatedVoxSize[0] * x;
+
+					// equations of point Pna and Pnb
+					Pna = P0a + z * DeltaZa * dirAA;
+
+					StartPoint = YStartPoint + Pna;
+					Point = StartPoint;  // +m_RotatedVoxSize[0] * x;
 
 					if (Filetype == INP_EXPORT)
 					{
@@ -507,40 +452,54 @@ void CTaperedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int File
 					}
 					else if (Filetype == VTU_EXPORT)
 						m_Mesh.AddNode(Point);
-
+					++iNodeIndex;
 				}
-				else if (x > 0 && x <= XVoxels1)
+
+
+				for (x = 1; x <= m_XVoxNumArr[SectionNum]; x++)
 				{
-					P0a = XYZ(0, 0, -0.105);
-					P0b = XYZ(6, 0, -0.105);
-
-					P1a = XYZ(0, 0, 1.105);
-					P1b = XYZ(6, 0, 1.105);
-
-					X = P0b.x - P0a.x;
-
-					Za = P1a.z - P0a.z;
-					Zb = P1b.z - P0b.z;
-
-					DeltaX = X / XVoxels1;
+					
+					Za = GetLength(P1a - P0a);
+					Zb = GetLength(P1b - P0b);
 
 					DeltaZa = Za / m_ZVoxels;
 					DeltaZb = Zb / m_ZVoxels;
 
+					// Calculating direction vectors AA and BB
+					dirAA = P1a - P0a;
+					dirBB = P1b - P0b;
 
-					m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
-
-					c = P0a.z + DeltaZa * z - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * x) + c;
+					Normalise(dirAA);
+					Normalise(dirBB);
 
 
+
+					// equations of point Pna and Pnb
+					Pna = P0a + z * DeltaZa * dirAA;
+					Pnb = P0b + z * DeltaZb * dirBB;
+
+
+					// Calculating everything AB
+					X = GetLength(Pnb - Pna);
+					DeltaX = X / m_XVoxNumArr[SectionNum];
+					dirAB = Pnb - Pna;
+					Normalise(dirAB);
+
+		
+
+
+					Pnab = Pna + x * DeltaX * dirAB;
+
+					//m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
+
+					//c = P0a.z + DeltaZa * z - m * P0a.x;
+
+					//zValue = m * (P0a.x + DeltaX * x) + c;
 
 					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
+					//StartPoint.z = zValue;
 
-					Point = StartPoint + XYZ((P0a.x + DeltaX * x), 0, 0);
-
+					Point = StartPoint + Pnab;
 
 					if (Filetype == INP_EXPORT)
 					{
@@ -554,167 +513,70 @@ void CTaperedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int File
 					// Points for centroid
 
 					//Point 2
-					//m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
-
-					//c = P0a.z + DeltaZa * z - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * (x - 1)) + c;
-
-
-
+					Pnab = Pna + (x - 1) * DeltaX * dirAB;
 					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-
-					Point2 = StartPoint + XYZ((P0a.x + DeltaX * (x - 1)), 0, 0);
+					Point2 = StartPoint + Pnab;
 
 					//Point 3
 
-					m = ((P0b.z + DeltaZb * (z + 1)) - (P0a.z + DeltaZa * (z + 1))) / (P0b.x - P0a.x);
-
-					c = P0a.z + DeltaZa * (z + 1) - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * (x - 1)) + c;
+					// equations of point Pna and Pnb
+					Pna = P0a + (z + 1) * DeltaZa * dirAA;
+					Pnb = P0b + (z + 1) * DeltaZb * dirBB;
 
 
+					// Calculating everything AB
+					X = GetLength(Pnb - Pna);
+					DeltaX = X / m_XVoxNumArr[SectionNum];
+					dirAB = Pnb - Pna;
+					Normalise(dirAB);
+
+
+					Pnab = Pna + (x - 1) * DeltaX * dirAB;
 
 					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
 
-					Point3 = StartPoint + XYZ((P0a.x + DeltaX * (x - 1)), 0, 0);
+					Point3 = StartPoint + Pnab;
 
 					//Point4
 
-					m = ((P0b.z + DeltaZb * (z + 1)) - (P0a.z + DeltaZa * (z + 1))) / (P0b.x - P0a.x);
-
-					c = P0a.z + DeltaZa * (z + 1) - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * x) + c;
+					// equations of point Pna and Pnb
+					Pna = P0a + (z + 1) * DeltaZa * dirAA;
+					Pnb = P0b + (z + 1) * DeltaZb * dirBB;
 
 
-
-					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-
-					Point4 = StartPoint + XYZ((P0a.x + DeltaX * x), 0, 0);
-
-
-				}
-				else if (x > XVoxels1 && x <= (XVoxels1 + XVoxels2))
-				{
-					P0a = XYZ(6, 0, -0.105);
-					P0b = XYZ(18, 0, -0.105);
-
-					P1a = XYZ(6, 0, 1.105);
-					P1b = XYZ(18, 0, 0.22);
-
-					X = P0b.x - P0a.x;
-
-					Za = P1a.z - P0a.z;
-					Zb = P1b.z - P0b.z;
-
-					DeltaX = X / XVoxels2;
-
-					DeltaZa = Za / m_ZVoxels;
-					DeltaZb = Zb / m_ZVoxels;
+					// Calculating everything AB
+					X = GetLength(Pnb - Pna);
+					DeltaX = X / m_XVoxNumArr[SectionNum];
+					dirAB = Pnb - Pna;
+					Normalise(dirAB);
 
 
-					m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
-
-					c = P0a.z + DeltaZa * z - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * (x - XVoxels1)) + c;
-
-
+					Pnab = Pna + x * DeltaX * dirAB;
 
 					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-					Point = StartPoint + XYZ((P0a.x + DeltaX * (x - XVoxels1)), 0, 0);
 
+					Point4 = StartPoint + Pnab;
 
-					if (Filetype == INP_EXPORT)
+					// Finding centre points of accociated elements by finding the centroid
+					if (x > 0 && x <= m_XVoxNumArr[SectionNum] && y < m_YVoxels && z < m_ZVoxels)
 					{
-						Output << iNodeIndex << ", ";
-						Output << Point << "\n";
+
+						CentroidPoints.clear();
+
+						CentroidPoints.push_back(Point);
+						CentroidPoints.push_back(Point2);
+						CentroidPoints.push_back(Point3);
+						CentroidPoints.push_back(Point4);
+
+						Centroid = GetCentroidXZ(&CentroidPoints.front(), 4);
+
+						CentroidPoint = XYZ(Centroid.x, m_StartPoint.y + m_RotatedVoxSize[1].y * (y + 0.5), Centroid.y);
+
+						CentrePoints.push_back(CentroidPoint);
+
 					}
-					else if (Filetype == VTU_EXPORT)
-						m_Mesh.AddNode(Point);
-
-
-
-					// Points for centroid
-
-					//Point 2
-					//m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
-
-					//c = P0a.z + DeltaZa * z - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * (x - 1 - XVoxels1)) + c;
-
-
-
-					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-					Point2 = StartPoint + XYZ((P0a.x + DeltaX * (x - 1 - XVoxels1)), 0, 0);
-
-					//Point 3
-
-					m = ((P0b.z + DeltaZb * (z + 1)) - (P0a.z + DeltaZa * (z + 1))) / (P0b.x - P0a.x);
-
-					c = P0a.z + DeltaZa * (z + 1) - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * (x - 1 - XVoxels1)) + c;
-
-
-
-					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-
-					Point3 = StartPoint + XYZ((P0a.x + DeltaX * (x - 1 - XVoxels1)), 0, 0);
-
-					//Point4
-
-					m = ((P0b.z + DeltaZb * (z + 1)) - (P0a.z + DeltaZa * (z + 1))) / (P0b.x - P0a.x);
-
-					c = P0a.z + DeltaZa * (z + 1) - m * P0a.x;
-
-					zValue = m * (P0a.x + DeltaX * (x - XVoxels1)) + c;
-
-
-
-					StartPoint = YStartPoint;
-					StartPoint.z = zValue;
-
-					Point4 = StartPoint + XYZ((P0a.x + DeltaX * (x - XVoxels1)), 0, 0);
+					++iNodeIndex;
 				}
-
-
-
-
-				// Finding centre points of accociated elements by finding the centroid
-				if (x > 0 && x <= TotalXVoxels && y < m_YVoxels && z < m_ZVoxels)
-				{
-
-
-
-
-					CentroidPoints.clear();
-
-					CentroidPoints.push_back(Point);
-					CentroidPoints.push_back(Point2);
-					CentroidPoints.push_back(Point3);
-					CentroidPoints.push_back(Point4);
-
-
-					Centroid = GetCentroidXZ(&CentroidPoints.front(), 4);
-
-
-
-					CentroidPoint = XYZ(Centroid.x, m_StartPoint.y + m_RotatedVoxSize[1].y * (y + 0.5), Centroid.y);
-
-					CentrePoints.push_back(CentroidPoint);
-
-				}
-				++iNodeIndex;
 			}
 
 		}
@@ -723,16 +585,335 @@ void CTaperedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int File
 		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end());
 		CentrePoints.clear();
 	}
+
+
+	// created the nodes associated with diagram one in my note book
+	for (z = 0; z <= m_ZVoxels; ++z)
+	{
+
+
+		for (y = 0; y <= m_YVoxels; ++y)
+		{
+			XYZ YStartPoint;
+			YStartPoint = m_StartPoint + m_RotatedVoxSize[1] * y;
+
+			for (SectionNum = 0; SectionNum < m_NumSections; ++SectionNum)
+			{
+				XYZ Point;
+				XYZ Point2;
+				XYZ Point3;
+				XYZ Point4;
+
+				P0a = m_P0Arr[SectionNum];
+				P0b = m_P0Arr[SectionNum + 1];
+
+				P1a = m_P1Arr[SectionNum];
+				P1b = m_P1Arr[SectionNum + 1];
+
+				
+
+
+
+				for (x = 0; x < m_XVoxNumArr[SectionNum]; x++)
+				{
+				
+					Za = GetLength(P1a - P0a);
+					Zb = GetLength(P1b - P0b);
+
+
+
+					DeltaZa = Za / m_ZVoxels;
+					DeltaZb = Zb / m_ZVoxels;
+
+					// Calculating direction vectors AA and BB
+					dirAA = P1a - P0a;
+					dirBB = P1b - P0b;
+
+					Normalise(dirAA);
+					Normalise(dirBB);
+
+
+
+					// equations of point Pna and Pnb
+					Pna = P0a + z * DeltaZa * dirAA;
+					Pnb = P0b + z * DeltaZb * dirBB;
+
+
+					// Calculating everything AB
+					X = GetLength(Pnb - Pna);
+					DeltaX = X / m_XVoxNumArr[SectionNum];
+					dirAB = Pnb - Pna;
+					Normalise(dirAB);
+
+
+
+
+					Pnab = Pna + (x + 0.5) * DeltaX * dirAB;
+
+					//m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
+
+					//c = P0a.z + DeltaZa * z - m * P0a.x;
+
+					//zValue = m * (P0a.x + DeltaX * x) + c;
+
+					StartPoint = YStartPoint;
+					//StartPoint.z = zValue;
+
+					Point = StartPoint + Pnab;
+
+					if (Filetype == INP_EXPORT)
+					{
+						Output << iNodeIndex << ", ";
+						Output << Point << "\n";
+					}
+					else if (Filetype == VTU_EXPORT)
+						m_Mesh.AddNode(Point);
+
+					++iNodeIndex;
+				}
+			}
+		}
+	}
+
+	// created the nodes associated with diagram two in my note book
+	for (z = 0; z <= m_ZVoxels; ++z)
+	{
+
+
+		for (y = 0; y < m_YVoxels; ++y)
+		{
+			XYZ YStartPoint;
+			YStartPoint = m_StartPoint + m_RotatedVoxSize[1] * (y + 0.5);
+
+			for (SectionNum = 0; SectionNum < m_NumSections; ++SectionNum)
+			{
+				XYZ Point;
+				XYZ Point2;
+				XYZ Point3;
+				XYZ Point4;
+
+				P0a = m_P0Arr[SectionNum];
+				P0b = m_P0Arr[SectionNum + 1];
+
+				P1a = m_P1Arr[SectionNum];
+				P1b = m_P1Arr[SectionNum + 1];
+
+				Za = GetLength(P1a - P0a);
+				Zb = GetLength(P1b - P0b);
+
+
+
+				
+				if (SectionNum == 0)
+				{
+					DeltaZa = Za / m_ZVoxels;
+					DeltaZb = Zb / m_ZVoxels;
+
+					// Calculating direction vectors AA and BB
+					dirAA = P1a - P0a;
+					dirBB = P1b - P0b;
+
+					Normalise(dirAA);
+					Normalise(dirBB);
+
+
+
+					// equations of point Pna and Pnb
+					Pna = P0a + z * DeltaZa * dirAA;
+					StartPoint = YStartPoint + Pna;
+					Point = StartPoint;  // +m_RotatedVoxSize[0] * x;
+
+					if (Filetype == INP_EXPORT)
+					{
+						Output << iNodeIndex << ", ";
+						Output << Point << "\n";
+					}
+					else if (Filetype == VTU_EXPORT)
+						m_Mesh.AddNode(Point);
+					++iNodeIndex;
+				}
+
+
+
+				for (x = 1; x <= m_XVoxNumArr[SectionNum]; x++)
+				{
+					// Could be more efficient in outer loop
+
+					DeltaZa = Za / m_ZVoxels;
+					DeltaZb = Zb / m_ZVoxels;
+
+					// Calculating direction vectors AA and BB
+					dirAA = P1a - P0a;
+					dirBB = P1b - P0b;
+
+					Normalise(dirAA);
+					Normalise(dirBB);
+
+
+
+					// equations of point Pna and Pnb
+					Pna = P0a + z * DeltaZa * dirAA;
+					Pnb = P0b + z * DeltaZb * dirBB;
+
+
+					// Calculating everything AB
+					X = GetLength(Pnb - Pna);
+					DeltaX = X / m_XVoxNumArr[SectionNum];
+					dirAB = Pnb - Pna;
+					Normalise(dirAB);
+
+		
+
+
+					Pnab = Pna + x  * DeltaX * dirAB;
+
+					//m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
+
+					//c = P0a.z + DeltaZa * z - m * P0a.x;
+
+					//zValue = m * (P0a.x + DeltaX * x) + c;
+
+					StartPoint = YStartPoint;
+					//StartPoint.z = zValue;
+
+					Point = StartPoint + Pnab;
+
+					if (Filetype == INP_EXPORT)
+					{
+						Output << iNodeIndex << ", ";
+						Output << Point << "\n";
+					}
+					else if (Filetype == VTU_EXPORT)
+						m_Mesh.AddNode(Point);
+
+					++iNodeIndex;
+				}
+			}
+		}
+	}
+
+	for (z = 0; z < m_ZVoxels; ++z)
+	{
+
+
+		for (y = 0; y <= m_YVoxels; ++y)
+		{
+			XYZ YStartPoint;
+			YStartPoint = m_StartPoint + m_RotatedVoxSize[1] * y;
+
+			for (SectionNum = 0; SectionNum < m_NumSections; ++SectionNum)
+			{
+				XYZ Point;
+				XYZ Point2;
+				XYZ Point3;
+				XYZ Point4;
+
+				P0a = m_P0Arr[SectionNum];
+				P0b = m_P0Arr[SectionNum + 1];
+
+				P1a = m_P1Arr[SectionNum];
+				P1b = m_P1Arr[SectionNum + 1];
+
+				
+
+				if (SectionNum == 0)
+				{
+					Za = GetLength(P1a - P0a);
+					Zb = GetLength(P1b - P0b);
+
+
+
+					DeltaZa = Za / m_ZVoxels;
+					DeltaZb = Zb / m_ZVoxels;
+
+					// Calculating direction vectors AA and BB
+					dirAA = P1a - P0a;
+					dirBB = P1b - P0b;
+
+					Normalise(dirAA);
+					Normalise(dirBB);
+
+
+
+					// equations of point Pna and Pnb
+					Pna = P0a + (z + 0.5) * DeltaZa * dirAA;
+					StartPoint = YStartPoint + Pna;
+					Point = StartPoint;  // +m_RotatedVoxSize[0] * x;
+
+					if (Filetype == INP_EXPORT)
+					{
+						Output << iNodeIndex << ", ";
+						Output << Point << "\n";
+					}
+					else if (Filetype == VTU_EXPORT)
+						m_Mesh.AddNode(Point);
+					++iNodeIndex;
+				}
+
+
+
+				for (x = 1; x <= m_XVoxNumArr[SectionNum]; x++)
+				{
+					// Could be more efficient in outer loop
+
+
+					Za = GetLength(P1a - P0a);
+					Zb = GetLength(P1b - P0b);
+
+
+
+					DeltaZa = Za / m_ZVoxels;
+					DeltaZb = Zb / m_ZVoxels;
+
+					// Calculating direction vectors AA and BB
+					dirAA = P1a - P0a;
+					dirBB = P1b - P0b;
+
+					Normalise(dirAA);
+					Normalise(dirBB);
+
+
+
+					// equations of point Pna and Pnb
+					Pna = P0a + (z + 0.5) * DeltaZa * dirAA;
+					Pnb = P0b + (z + 0.5) * DeltaZb * dirBB;
+
+
+					// Calculating everything AB
+					X = GetLength(Pnb - Pna);
+					DeltaX = X / m_XVoxNumArr[SectionNum];
+					dirAB = Pnb - Pna;
+					Normalise(dirAB);
+
+
+					Pnab = Pna + x * DeltaX * dirAB;
+
+					//m = ((P0b.z + DeltaZb * z) - (P0a.z + DeltaZa * z)) / (P0b.x - P0a.x);
+
+					//c = P0a.z + DeltaZa * z - m * P0a.x;
+
+					//zValue = m * (P0a.x + DeltaX * x) + c;
+
+					StartPoint = YStartPoint;
+					//StartPoint.z = zValue;
+
+					Point = StartPoint + Pnab;
+
+					if (Filetype == INP_EXPORT)
+					{
+						Output << iNodeIndex << ", ";
+						Output << Point << "\n";
+					}
+					else if (Filetype == VTU_EXPORT)
+						m_Mesh.AddNode(Point);
+
+					++iNodeIndex;
+				}
+			}
+		}
+	}
 }
-
-
-void CTaperedVoxelMesh::OutputNodesTapered(ostream &Output)
-{
-	int placeholder = 2;
-}
-
-
-
+/*
 void CTaperedVoxelMesh::OutputNodesQuad(ostream &Output, CTextile &Textile, int Filetype)
 {
 	int x, y, z;
@@ -887,7 +1068,7 @@ void CTaperedVoxelMesh::OutputNodesQuad(ostream &Output, CTextile &Textile, int 
 
 
 }
-
+*/
 void CTaperedVoxelMesh::GetElementMap(CTextile &Textile)
 {
 	m_ElementMap.clear();
@@ -999,7 +1180,7 @@ int CTaperedVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bo
 
 int CTaperedVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype)
 {
-	int numx = TotalXVoxels + 1;
+	int numx = m_XVoxels + 1;
 	int numy = m_YVoxels + 1;
 	int x, y, z;
 	vector<POINT_INFO>::iterator itElementInfo = m_ElementsInfo.begin();
@@ -1014,7 +1195,7 @@ int CTaperedVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bo
 	{
 		for (y = 0; y < m_YVoxels; ++y)
 		{
-			for (x = 0; x < TotalXVoxels; ++x)
+			for (x = 0; x < m_XVoxels; ++x)
 			{
 				if ((itElementInfo->iYarnIndex == -1 && bOutputMatrix)
 					|| (itElementInfo->iYarnIndex >= 0 && bOutputYarn))
@@ -1070,7 +1251,7 @@ int CTaperedVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bo
 
 
 
-
+/*
 int CTaperedVoxelMesh::OutputHexElementsQuad(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype)
 {
 	int numx = m_XVoxels + 1;
@@ -1153,3 +1334,5 @@ int CTaperedVoxelMesh::OutputHexElementsQuad(ostream &Output, bool bOutputMatrix
 	}
 	return (iElementNumber - 1);
 }
+
+*/
