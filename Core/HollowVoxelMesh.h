@@ -27,11 +27,11 @@ namespace TexGen
 	class CTextile;
 
 	/// Class used to generate voxel mesh of prism domain for output to ABAQUS
-	class CLASS_DECLSPEC CTaperedVoxelMesh : public CVoxelMesh
+	class CLASS_DECLSPEC CHollowVoxelMesh : public CVoxelMesh
 	{
 	public:
-		CTaperedVoxelMesh(string Type = "CTaperedPeriodicBoundaries");
-		virtual ~CTaperedVoxelMesh(void);
+		CHollowVoxelMesh(string Type = "CHollowPeriodicBoundaries");
+		virtual ~CHollowVoxelMesh(void);
 
 
 		void SaveVoxelMesh(CTextile &Textile, string OutputFilename, vector<XYZ> &P0Arr, vector<XYZ> &P1Arr, vector<int> &XVoxNumArr, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType = 0, int FileType = INP_EXPORT);

@@ -53,6 +53,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "RotatedVoxelMesh.h"
 #include "PrismVoxelMesh.h"
 #include "TaperedVoxelMesh.h"
+#include "HollowVoxelMesh.h"
 #include "TetgenMesh.h"
 #include "SurfaceMesh.h"
 #include "PeriodicBoundaries.h"
